@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>نجات شهر اعشار</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap" rel="stylesheet">
+<style>
+/* ================= پایه ================= */
+:root{
+  --gold:#ffc94d; --gold2:#ff9d2e;
+  --hp:#ef4444; --hp2:#f97316;
+  --mana:#38bdf8;
+  --violet:#7c3aed; --indigo:#4f46e5;
+  --green:#22c55e;
+  --dark:#0b1026;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Vazirmatn',Tahoma,sans-serif;
+  background:var(--dark); color:#e8ecff; overflow:hidden;
+  user-select:none;
+}
+#stage{
+  position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+  background:
+    radial-gradient(ellipse at 50% -30%, #2a1f5e 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 130%, #3b1d4d 0%, transparent 62%),
+    linear-gradient(160deg,#0b1026,#160c2e 50%,#0b1026);
+  transition:transform .08s;
+}
+#stage.shake{ animation:shake .32s ease }
+@keyframes shake{
+  0%,100%{transform:translate(0,0)}
+  15%{transform:translate(-9px,4px)}
+  30%{transform:translate(8px,-5px)}
+  45%{transform:translate(-7px,-3px)}
+  60%{transform:translate(6px,4px)}
+  80%{transform:translate(-3px,0)}
+}
+#stars{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.star{position:absolute;background:#fff;border-radius:50%;opacity:.5;animation:tw 3s infinite ease-in-out}
+@keyframes tw{0%,100%{opacity:.15;transform:scale(.7)}50%{opacity:.9;transform:scale(1.15)}}
+
+#app{
+  position:relative; width:100%; max-width:760px; height:100%;
+  display:flex; align-items:center; justify-content:center;
+  padding:10px; z-index:2;
+}
+.screen{display:none; width:100%; max-height:100%; overflow-y:auto; overscroll-behavior:contain}
+.screen.on{display:block; animation:slideIn .35s cubic-bezier(.2,.9,.3,1)}
+@keyframes slideIn{from{opacity:0;transform:translateY(22px) scale(.97)}to{opacity:1;transform:none}}
+.screen::-webkit-scrollbar{width:0}
+
+/* ================= دکمه‌ها ================= */
+.btn{
+  font-family:inherit; font-weight:900; font-size:1.05rem; border:0; cursor:pointer;
+  padding:16px 24px; border-radius:18px; color:#1a0f00; width:100%;
+  background:linear-gradient(180deg,var(--gold),var(--gold2));
+  box-shadow:0 7px 0 #a35a00, 0 12px 26px rgba(255,160,40,.35);
+  transition:transform .1s, box-shadow .1s, filter .2s;
+}
+.btn:active{transform:translateY(5px); box-shadow:0 2px 0 #a35a00}
+.btn.purple{
+  color:#fff; background:linear-gradient(180deg,#8b5cf6,#6d28d9);
+  box-shadow:0 7px 0 #3f1d8a, 0 12px 26px rgba(124,58,237,.4);
+}
+.btn.purple:active{box-shadow:0 2px 0 #3f1d8a}
+.btn.ghost{
+  background:transparent; color:#a5b4fc; border:2px solid #4338ca; box-shadow:none;
+  font-size:.95rem; padding:12px;
+}
+.btn.ghost:active{transform:translateY(2px)}
+
+/* ================= صفحه عنوان ================= */
+.hero-title{text-align:center; padding:8px 0 4px}
+.hero-title .logo{
+  font-size:clamp(2rem,9vw,3.4rem); font-weight:900; line-height:1.25;
+  background:linear-gradient(180deg,#fff,#ffc94d 55%,#ff7a18);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  filter:drop-shadow(0 4px 16px rgba(255,160,40,.45));
+}
+.hero-title .sub{color:#a5b4fc; font-size:.95rem; margin-top:6px; font-weight:600}
+
+.panel{
+  background:linear-gradient(180deg,rgba(30,41,90,.92),rgba(18,24,55,.95));
+  border:1px solid rgba(120,140,255,.28);
+  border-radius:26px; padding:22px 18px;
+  box-shadow:0 20px 50px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.07);
+}
+.story{line-height:2.1; font-size:1rem; color:#cbd5ff; text-align:center}
+.story .m{font-size:2.6rem; display:block; margin:6px 0; animation:float 2.6s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.story b{color:#ffc94d}
+.story .bad{color:#ff8080}
+
+/* ================= انتخاب قهرمان ================= */
+.hero-grid{display:grid; gap:12px; margin-top:14px}
+.hero-card{
+  display:flex; align-items:center; gap:14px; cursor:pointer; text-align:right;
+  background:linear-gradient(180deg,rgba(40,50,110,.85),rgba(22,28,62,.9));
+  border:2px solid rgba(120,140,255,.3); border-radius:20px; padding:14px;
+  transition:transform .15s, border-color .15s, box-shadow .15s; font-family:inherit;
+  color:inherit; width:100%;
+}
+.hero-card:hover{transform:translateY(-4px) scale(1.01); border-color:var(--gold);
+  box-shadow:0 12px 30px rgba(255,180,60,.25)}
+.hero-card .av{font-size:2.8rem; filter:drop-shadow(0 4px 8px rgba(0,0,0,.5))}
+.hero-card .nm{font-weight:900; font-size:1.1rem}
+.hero-card .pk{font-size:.82rem; color:#9fb0ff; margin-top:3px; line-height:1.7}
+
+/* ================= نقشه ================= */
+.map-head{display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:14px; flex-wrap:wrap}
+.pill{
+  background:rgba(255,255,255,.08); border:1px solid rgba(120,140,255,.3);
+  border-radius:999px; padding:7px 14px; font-size:.85rem; font-weight:800;
+  display:flex; align-items:center; gap:6px;
+}
+.map-path{display:flex; flex-direction:column; gap:12px}
+.node{
+  display:flex; align-items:center; gap:14px; padding:14px;
+  background:linear-gradient(180deg,rgba(40,50,110,.8),rgba(22,28,62,.9));
+  border:2px solid rgba(120,140,255,.25); border-radius:20px;
+  transition:transform .15s, border-color .15s; cursor:pointer; font-family:inherit;
+  color:inherit; text-align:right; width:100%;
+}
+.node.locked{opacity:.42; filter:grayscale(.8); cursor:not-allowed}
+.node.done{border-color:#22c55e; box-shadow:0 0 22px rgba(34,197,94,.3)}
+.node:not(.locked):hover{transform:translateX(-6px); border-color:var(--gold)}
+.node .m{font-size:2.3rem}
+.node .info{flex:1}
+.node .info .t{font-weight:900; font-size:1.02rem}
+.node .info .d{font-size:.8rem; color:#9fb0ff; margin-top:3px}
+.node .st{font-size:1.4rem}
+
+/* ================= میدان نبرد ================= */
+.arena{
+  position:relative;
+  background:linear-gradient(180deg,rgba(24,32,74,.92),rgba(12,16,42,.96));
+  border:1px solid rgba(120,140,255,.3); border-radius:26px;
+  padding:14px; box-shadow:0 20px 50px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.06);
+  overflow:hidden;
+}
+.arena::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(circle at 50% 0%, rgba(124,58,237,.22), transparent 55%);
+}
+.hud{display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px; position:relative; z-index:2; flex-wrap:wrap}
+.hud .pill{padding:6px 12px; font-size:.82rem}
+.coins{color:var(--gold)}
+
+/* --- هیولا --- */
+.monster-zone{position:relative; text-align:center; padding:4px 0 8px; z-index:2}
+.monster{
+  font-size:clamp(3.2rem,15vw,4.6rem); display:inline-block; line-height:1;
+  filter:drop-shadow(0 8px 18px rgba(180,40,255,.5));
+  animation:float 2.8s ease-in-out infinite;
+  transition:transform .1s;
+}
+.monster.hurt{animation:hurt .4s ease}
+@keyframes hurt{
+  0%{transform:translateX(0) scale(1);filter:brightness(3) drop-shadow(0 0 20px #fff)}
+  25%{transform:translateX(-14px) scale(.9) rotate(-8deg)}
+  50%{transform:translateX(12px) scale(1.05) rotate(8deg)}
+  100%{transform:translateX(0) scale(1)}
+}
+.monster.attack{animation:lunge .45s ease}
+@keyframes lunge{
+  0%{transform:translateY(0) scale(1)}
+  40%{transform:translateY(26px) scale(1.35)}
+  100%{transform:translateY(0) scale(1)}
+}
+.monster.dead{animation:die .7s forwards ease}
+@keyframes die{
+  0%{transform:scale(1) rotate(0);opacity:1}
+  100%{transform:scale(.2) rotate(220deg) translateY(40px);opacity:0}
+}
+.mname{font-weight:900; font-size:.95rem; color:#f0abfc; margin-top:2px}
+.hpbar{
+  height:14px; border-radius:999px; background:#1a1030; overflow:hidden;
+  border:1px solid rgba(255,120,200,.4); margin:8px auto 0; max-width:330px;
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.6);
+}
+.hpbar>i{
+  display:block; height:100%; width:100%;
+  background:linear-gradient(90deg,#f43f5e,#ec4899,#a855f7);
+  transition:width .45s cubic-bezier(.3,1.4,.4,1);
+}
+.hpbar.low>i{background:linear-gradient(90deg,#fbbf24,#ef4444)}
+.speech{
+  background:rgba(255,255,255,.95); color:#1a0f2e; font-weight:800; font-size:.86rem;
+  padding:9px 14px; border-radius:16px 16px 4px 16px; display:inline-block;
+  max-width:92%; margin-top:10px; line-height:1.75; position:relative;
+  animation:pop .3s cubic-bezier(.3,1.6,.4,1);
+}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* --- سؤال --- */
+.qzone{position:relative; z-index:2; margin-top:6px}
+.qask{text-align:center; font-size:.9rem; font-weight:800; color:#9fb0ff; margin-bottom:10px}
+.runes{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+.rune{
+  font-family:inherit; cursor:pointer; position:relative;
+  background:linear-gradient(180deg,#25317a,#161e4a);
+  border:3px solid #5b6fe8; border-radius:20px;
+  padding:22px 6px;
+  box-shadow:0 8px 0 #0b1233, 0 0 26px rgba(91,111,232,.35);
+  transition:transform .1s, box-shadow .1s, border-color .15s, background .15s;
+}
+.rune:active{transform:translateY(6px); box-shadow:0 2px 0 #0b1233}
+.rune .v{
+  display:block; font-size:clamp(1.7rem,8vw,2.5rem); font-weight:900; letter-spacing:1px;
+  direction:ltr; unicode-bidi:isolate; color:#e0e7ff;
+  text-shadow:0 0 18px rgba(140,160,255,.7);
+}
+.rune.good{border-color:var(--green); background:linear-gradient(180deg,#166534,#052e16);
+  box-shadow:0 8px 0 #04240f, 0 0 34px rgba(34,197,94,.6)}
+.rune.bad{border-color:#ef4444; background:linear-gradient(180deg,#7f1d1d,#3b0a0a);
+  box-shadow:0 8px 0 #2a0707, 0 0 30px rgba(239,68,68,.5)}
+.rune.dim{opacity:.35}
+.rune:disabled{cursor:default}
+.rune .tag{position:absolute; top:6px; inset-inline-start:10px; font-size:1.15rem}
+
+/* --- تایمر --- */
+.timerwrap{margin-top:12px; display:flex; align-items:center; gap:9px}
+.timerwrap .ic{font-size:1.1rem}
+.tbar{flex:1; height:12px; border-radius:999px; background:#151b3d; overflow:hidden;
+  border:1px solid rgba(120,140,255,.3)}
+.tbar>i{display:block; height:100%; width:100%; border-radius:999px;
+  background:linear-gradient(90deg,#38bdf8,#818cf8); transition:width .1s linear}
+.tbar.low>i{background:linear-gradient(90deg,#fbbf24,#ef4444); animation:pulse .5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+
+/* --- قدرت‌ها --- */
+.powers{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:12px; position:relative; z-index:2}
+.pw{
+  font-family:inherit; cursor:pointer; border:1px solid rgba(120,140,255,.35);
+  background:rgba(255,255,255,.06); border-radius:14px; padding:9px 4px;
+  color:#dbe3ff; transition:transform .12s, background .15s, border-color .15s;
+  position:relative;
+}
+.pw:active{transform:scale(.94)}
+.pw .e{font-size:1.3rem; display:block}
+.pw .n{font-size:.68rem; font-weight:700; margin-top:2px; display:block}
+.pw .c{
+  position:absolute; top:-6px; inset-inline-end:-4px; background:var(--gold); color:#1a0f00;
+  font-size:.68rem; font-weight:900; border-radius:999px; min-width:20px; height:20px;
+  display:flex; align-items:center; justify-content:center; padding:0 5px;
+  box-shadow:0 2px 6px rgba(0,0,0,.5);
+}
+.pw.empty{opacity:.35; cursor:not-allowed}
+.pw.ready{border-color:var(--gold); background:rgba(255,201,77,.18); box-shadow:0 0 18px rgba(255,201,77,.4)}
+
+/* --- بازخورد --- */
+.fb{
+  position:absolute; inset:0; z-index:20; display:none; align-items:center; justify-content:center;
+  background:rgba(5,8,24,.86); backdrop-filter:blur(4px); border-radius:26px; padding:16px;
+}
+.fb.on{display:flex; animation:fadeIn .22s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.fbcard{
+  width:100%; max-width:460px; border-radius:22px; padding:18px;
+  animation:zoom .32s cubic-bezier(.2,1.5,.4,1); text-align:center;
+}
+@keyframes zoom{from{transform:scale(.75);opacity:0}to{transform:scale(1);opacity:1}}
+.fbcard.ok{background:linear-gradient(180deg,#064e3b,#022c22); border:2px solid #22c55e;
+  box-shadow:0 0 50px rgba(34,197,94,.45)}
+.fbcard.no{background:linear-gradient(180deg,#5b1616,#2b0707); border:2px solid #ef4444;
+  box-shadow:0 0 50px rgba(239,68,68,.4)}
+.fbcard .big{font-size:1.5rem; font-weight:900; margin-bottom:10px}
+.fbcard.ok .big{color:#6ee7b7}
+.fbcard.no .big{color:#fca5a5}
+.align{
+  background:rgba(0,0,0,.35); border-radius:14px; padding:12px; margin:10px 0;
+  direction:ltr; unicode-bidi:isolate; font-weight:900; font-size:1.35rem;
+  color:#fff; display:flex; flex-direction:column; gap:5px;
+  border:1px solid rgba(255,255,255,.12);
+}
+.align .r{display:flex; justify-content:center; gap:10px; align-items:baseline}
+.align .r small{font-size:.7rem; color:#94a3b8; font-weight:700}
+.align .r.hi{color:#fde047; text-shadow:0 0 14px rgba(253,224,71,.6)}
+.fbcard .why{font-size:.9rem; line-height:1.95; color:#dbe3ff}
+.fbcard .why b{color:#fde047}
+.fbcard .btn{margin-top:14px; padding:13px}
+
+/* --- ذرات --- */
+.fx{position:absolute; pointer-events:none; font-weight:900; z-index:30;
+  direction:ltr; unicode-bidi:isolate}
+@keyframes up{to{transform:translateY(-90px) scale(1.5); opacity:0}}
+@keyframes fly{to{transform:translate(var(--tx),var(--ty)) scale(.2) rotate(var(--rot)); opacity:0}}
+
+/* ================= فروشگاه ================= */
+.shop-grid{display:grid; gap:10px; margin-top:14px}
+.item{
+  display:flex; align-items:center; gap:12px; padding:13px;
+  background:linear-gradient(180deg,rgba(40,50,110,.85),rgba(22,28,62,.9));
+  border:2px solid rgba(120,140,255,.3); border-radius:18px;
+}
+.item .e{font-size:2rem}
+.item .d{flex:1}
+.item .d .t{font-weight:900; font-size:.98rem}
+.item .d .s{font-size:.78rem; color:#9fb0ff; margin-top:2px; line-height:1.6}
+.buy{
+  font-family:inherit; font-weight:900; cursor:pointer; border:0; border-radius:14px;
+  padding:10px 14px; background:linear-gradient(180deg,var(--gold),var(--gold2));
+  color:#1a0f00; box-shadow:0 4px 0 #a35a00; font-size:.85rem; white-space:nowrap;
+  transition:transform .1s;
+}
+.buy:active{transform:translateY(3px); box-shadow:0 1px 0 #a35a00}
+.buy:disabled{filter:grayscale(1); opacity:.45; cursor:not-allowed}
+
+/* ================= قفل جادویی ================= */
+.lockbox{text-align:center}
+.lock-emoji{font-size:3.6rem; animation:float 2.4s ease-in-out infinite; display:block; margin-bottom:6px}
+.task{font-size:1rem; line-height:2.1; color:#cbd5ff; margin-bottom:16px}
+.task em{color:#ffc94d; font-style:normal; font-weight:900}
+.inp{
+  width:100%; max-width:260px; text-align:center; font-family:inherit;
+  font-size:2rem; font-weight:900; padding:12px; border-radius:16px;
+  border:3px solid rgba(120,140,255,.4); background:rgba(0,0,0,.35); color:#fff;
+  outline:none; direction:ltr; unicode-bidi:isolate; transition:border-color .15s;
+}
+.inp:focus{border-color:var(--gold)}
+.msg{margin-top:14px; font-weight:800; font-size:.95rem; line-height:1.95; min-height:30px}
+.msg.ok{color:#6ee7b7}
+.msg.no{color:#fca5a5}
+.msg.warn{color:#fcd34d}
+
+/* ================= پایان ================= */
+.medal{font-size:5rem; text-align:center; display:block; animation:float 2.6s ease-in-out infinite;
+  filter:drop-shadow(0 0 28px rgba(255,200,70,.8))}
+.stat-row{display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-top:14px}
+.stat{background:rgba(255,255,255,.06); border:1px solid rgba(120,140,255,.22);
+  border-radius:14px; padding:11px; text-align:center}
+.stat .v{font-size:1.4rem; font-weight:900; color:#ffc94d}
+.stat .k{font-size:.72rem; color:#9fb0ff; margin-top:3px}
+details{margin-top:14px; background:rgba(0,0,0,.28); border-radius:16px;
+  border:1px solid rgba(120,140,255,.22); padding:12px 14px}
+summary{cursor:pointer; font-weight:900; font-size:.9rem; color:#a5b4fc; list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'📋 '}
+.diag{margin-top:12px; font-size:.86rem; line-height:2; color:#cbd5ff}
+.diag .tag{display:inline-block; padding:3px 9px; border-radius:999px; font-weight:900; font-size:.75rem; margin-bottom:6px}
+.diag .tag.red{background:#7f1d1d; color:#fecaca}
+.diag .tag.yellow{background:#78350f; color:#fde68a}
+.diag .tag.green{background:#064e3b; color:#a7f3d0}
+.rev{max-height:190px; overflow-y:auto; margin-top:10px; border-radius:12px; border:1px solid rgba(255,255,255,.1)}
+.rev .it{padding:9px 12px; border-bottom:1px solid rgba(255,255,255,.06); font-size:.8rem}
+.rev .it:last-child{border-bottom:0}
+.rev .it .p{direction:ltr; unicode-bidi:isolate; font-weight:900; font-size:.95rem}
+.rev .it.bad{background:rgba(239,68,68,.12)}
+.center{text-align:center}
+.mt{margin-top:16px}
+@media(max-width:380px){
+  .powers{grid-template-columns:repeat(4,1fr); gap:6px}
+  .pw .n{font-size:.6rem}
+  .rune .v{font-size:1.5rem}
+}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="stars"></div>
+  <div id="app">
+
+    <!-- ============ عنوان ============ -->
+    <section id="sc-title" class="screen on">
+      <div class="panel">
+        <div class="hero-title">
+          <div class="logo">نجات شهر اعشار</div>
+          <div class="sub">یک ماجراجویی برای شکست دادن هیولاها</div>
+        </div>
+        <div class="story" style="margin-top:16px">
+          <span class="m">😈</span>
+          <b>هیولای رقم‌های فریبکار</b> به شهر اعشار حمله کرده!<br>
+          او با جادو کاری می‌کند که بچه‌ها فکر کنند<br>
+          <span class="bad">«هر عددی رقم‌های بیشتری داشته باشد، بزرگ‌تر است!»</span><br>
+          حالا شهر پر از عددهای گیج‌کننده شده.<br>
+          تو باید با <b>شمشیر مقایسه</b> هیولاها را شکست بدهی<br>
+          و <b>قفل جادویی شهر</b> را باز کنی.
+        </div>
+        <button class="btn mt" id="to-hero">شروع ماجراجویی ⚔️</button>
+      </div>
+    </section>
+
+    <!-- ============ انتخاب قهرمان ============ -->
+    <section id="sc-hero" class="screen">
+      <div class="panel">
+        <div class="center" style="font-weight:900;font-size:1.25rem">قهرمانت را انتخاب کن</div>
+        <div class="center" style="color:#9fb0ff;font-size:.85rem;margin-top:5px">هر قهرمان یک قدرت ویژه دارد</div>
+        <div class="hero-grid" id="hero-grid"></div>
+      </div>
+    </section>
+
+    <!-- ============ نقشه ============ -->
+    <section id="sc-map" class="screen">
+      <div class="panel">
+        <div class="map-head">
+          <div class="pill">🗺️ نقشه شهر اعشار</div>
+          <div class="pill coins">🪙 <span id="map-coins">۰</span></div>
+          <div class="pill">❤️ <span id="map-lives">۳</span></div>
+        </div>
+        <div class="map-path" id="map-path"></div>
+        <button class="btn ghost mt" id="to-shop">🛒 فروشگاه جادویی</button>
+      </div>
+    </section>
+
+    <!-- ============ نبرد ============ -->
+    <section id="sc-battle" class="screen">
+      <div class="arena" id="arena">
+        <div class="hud">
+          <div class="pill" id="lv-name">مرحله ۱</div>
+          <div class="pill coins">🪙 <span id="b-coins">۰</span></div>
+          <div class="pill" id="b-lives">❤️❤️❤️</div>
+          <div class="pill" id="b-combo" style="display:none">🔥 <span>۰</span></div>
+        </div>
+
+        <div class="monster-zone">
+          <div class="monster" id="monster">👹</div>
+          <div class="mname" id="mname">دیو دهم‌ها</div>
+          <div class="hpbar" id="hpbar"><i></i></div>
+          <div class="speech" id="speech">هه هه! بیا اگر می‌توانی!</div>
+        </div>
+
+        <div class="qzone">
+          <div class="qask" id="qask">کدام عدد بزرگ‌تر است؟ روی آن ضربه بزن تا حمله کنی!</div>
+          <div class="runes">
+            <button class="rune" id="rune-0"><span class="tag"></span><span class="v" dir="ltr"></span></button>
+            <button class="rune" id="rune-1"><span class="tag"></span><span class="v" dir="ltr"></span></button>
+          </div>
+          <div class="timerwrap">
+            <span class="ic">⏳</span>
+            <div class="tbar" id="tbar"><i></i></div>
+          </div>
+          <div class="powers" id="powers"></div>
+        </div>
+
+        <!-- بازخورد -->
+        <div class="fb" id="fb">
+          <div class="fbcard" id="fbcard">
+            <div class="big" id="fb-big"></div>
+            <div class="align" id="fb-align"></div>
+            <div class="why" id="fb-why"></div>
+            <button class="btn" id="fb-btn">ادامه ⚔️</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ فروشگاه ============ -->
+    <section id="sc-shop" class="screen">
+      <div class="panel">
+        <div class="center" style="font-weight:900;font-size:1.3rem">🛒 فروشگاه جادویی</div>
+        <div class="center" style="color:#9fb0ff;font-size:.85rem;margin-top:5px">
+          سکه‌هایت: 🪙 <b id="shop-coins" style="color:#ffc94d">۰</b>
+        </div>
+        <div class="shop-grid" id="shop-grid"></div>
+        <button class="btn mt" id="shop-done">برو به مبارزه ⚔️</button>
+      </div>
+    </section>
+
+    <!-- ============ قفل جادویی ============ -->
+    <section id="sc-build" class="screen">
+      <div class="panel lockbox">
+        <span class="lock-emoji">🔐</span>
+        <div style="font-weight:900;font-size:1.3rem;margin-bottom:8px">قفل جادویی شهر</div>
+        <div class="task">
+          هیولا شکست خورد، اما دروازه‌ی شهر قفل است!<br>
+          برای باز کردن قفل باید یک <em>عدد جادویی</em> بسازی:<br><br>
+          عددی که از <em>۰/۷</em> کوچک‌تر باشد،<br>
+          ولی <em>رقم‌های اعشاری بیشتری</em> داشته باشد.
+        </div>
+        <input class="inp" id="build-inp" placeholder="۰/..." autocomplete="off" inputmode="decimal">
+        <div class="msg" id="build-msg"></div>
+        <button class="btn mt" id="build-btn">باز کردن قفل 🔓</button>
+        <button class="btn ghost mt" id="build-skip" style="margin-top:10px">رد کردن و پایان بازی</button>
+      </div>
+    </section>
+
+    <!-- ============ پایان ============ -->
+    <section id="sc-end" class="screen">
+      <div class="panel">
+        <span class="medal" id="medal">🏆</span>
+        <div class="center" style="font-weight:900;font-size:1.4rem;margin-top:8px" id="end-title">شهر نجات یافت!</div>
+        <div class="center" style="color:#9fb0ff;font-size:.9rem;margin-top:8px;line-height:1.9" id="end-sub"></div>
+
+        <div class="stat-row">
+          <div class="stat"><div class="v" id="e-coins">۰</div><div class="k">سکه</div></div>
+          <div class="stat"><div class="v" id="e-acc">۰٪</div><div class="k">دقت پاسخ‌ها</div></div>
+          <div class="stat"><div class="v" id="e-combo">۰</div><div class="k">بهترین زنجیره</div></div>
+          <div class="stat"><div class="v" id="e-lives">۰</div><div class="k">جان باقی‌مانده</div></div>
+        </div>
+
+        <details id="diag-box">
+          <summary>گزارش تحلیلی (برای معلم)</summary>
+          <div class="diag" id="diag-text"></div>
+          <div class="rev" id="diag-rev"></div>
+        </details>
+
+        <button class="btn mt" id="again">یک بار دیگر بازی کن 🔄</button>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   ابزارها
+   ========================================================== */
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const FA = '۰۱۲۳۴۵۶۷۸۹';
+const fa = s => String(s).replace(/\d/g, d => FA[+d]);
+const shuffle = a => a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+const rnd = n => Math.floor(Math.random()*n);
+
+function numStr(v, d){
+  return fa(v.toFixed(d)).replace('.', '/');
+}
+function decCount(s){
+  const p = String(s).split('.');
+  return p.length > 1 ? p[1].length : 0;
+}
+
+/* ---------- صدا ---------- */
+let AC = null;
+function ac(){
+  if(!AC){ try{ AC = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ AC = null; } }
+  if(AC && AC.state === 'suspended') AC.resume();
+  return AC;
+}
+function tone(f, dur, type, vol, delay){
+  const c = ac(); if(!c) return;
+  const t0 = c.currentTime + (delay||0);
+  const o = c.createOscillator(), g = c.createGain();
+  o.type = type || 'sine'; o.frequency.setValueAtTime(f, t0);
+  g.gain.setValueAtTime(vol||0.07, t0);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(g); g.connect(c.destination);
+  o.start(t0); o.stop(t0 + dur + .02);
+}
+function noise(dur, vol){
+  const c = ac(); if(!c) return;
+  const n = c.sampleRate * dur;
+  const buf = c.createBuffer(1, n, c.sampleRate);
+  const d = buf.getChannelData(0);
+  for(let i=0;i<n;i++) d[i] = (Math.random()*2-1) * (1 - i/n);
+  const s = c.createBufferSource(); s.buffer = buf;
+  const g = c.createGain(); g.gain.value = vol || .12;
+  s.connect(g); g.connect(c.destination); s.start();
+}
+const SFX = {
+  hit(){ tone(880,.08,'square',.09); tone(1320,.12,'square',.07,.05); noise(.09,.1); },
+  crit(){ tone(1046,.07,'square',.1); tone(1568,.14,'square',.09,.06); tone(2093,.16,'sine',.07,.11); noise(.12,.12); },
+  hurt(){ tone(200,.16,'sawtooth',.1); tone(130,.22,'square',.09,.08); noise(.16,.14); },
+  coin(){ tone(1318,.06,'sine',.09); tone(1760,.1,'sine',.08,.05); },
+  click(){ tone(600,.04,'sine',.05); },
+  win(){ [523,659,784,1046].forEach((f,i)=>tone(f,.2,'sine',.09,i*.1)); },
+  lose(){ [440,349,262,196].forEach((f,i)=>tone(f,.3,'sawtooth',.07,i*.14)); },
+  power(){ tone(400,.1,'sine',.08); tone(1200,.2,'sine',.08,.08); },
+  timeout(){ tone(300,.3,'sawtooth',.09); }
+};
+
+/* ---------- ستاره‌ها ---------- */
+(function makeStars(){
+  const box = $('#stars');
+  let h = '';
+  for(let i=0;i<70;i++){
+    const s = 1 + Math.random()*2.4;
+    h += `<span class="star" style="
+      left:${Math.random()*100}%; top:${Math.random()*100}%;
+      width:${s}px; height:${s}px;
+      animation-delay:${(Math.random()*3).toFixed(2)}s;
+      animation-duration:${(2.4+Math.random()*2.6).toFixed(2)}s"></span>`;
+  }
+  box.innerHTML = h;
+})();
+
+/* ==========================================================
+   داده‌ها
+   ========================================================== */
+const HEROES = [
+  { id:'arash', name:'آرش', emoji:'🦸‍♂️', title:'سپرِ فولادین',
+    perk:'۴ جان دارد به‌جای ۳ جان',
+    apply(){ G.maxLives = 4; G.lives = 4; } },
+  { id:'sara', name:'سارا', emoji:'🧙‍♀️', title:'بانوی زمان',
+    perk:'۴ ثانیه زمان بیشتر در هر سؤال',
+    apply(){ G.timeBonus = 4; } },
+  { id:'ruby', name:'روبی', emoji:'🐉', title:'اژدهای کوچک',
+    perk:'۵۰٪ سکه بیشتر از هر پیروزی',
+    apply(){ G.coinMul = 1.5; } }
+];
+
+/* هر جفت: [عدد اول, عدد دوم] — تعداد اعشار از خودِ رشته مشخص می‌شود */
+const Q = {
+  1: [ ['0.5','0.45'], ['0.8','0.72'], ['0.3','0.28'], ['0.7','0.65'],
+       ['2.4','2.36'], ['1.5','1.49'], ['3.2','3.18'], ['0.6','0.59'],
+       ['4.1','4.09'], ['0.9','0.88'], ['6.3','6.25'], ['0.2','0.17'] ],
+
+  2: [ ['4.68','4.8'], ['3.72','3.8'], ['0.45','0.5'], ['5.27','5.3'],
+       ['2.36','2.4'], ['0.72','0.8'], ['1.29','1.3'], ['0.63','0.7'],
+       ['6.19','6.2'], ['0.81','0.9'], ['3.85','3.9'], ['7.08','7.1'] ],
+
+  3: [ ['0.638','0.7'], ['2.415','2.5'], ['1.099','1.2'], ['0.567','0.6'],
+       ['4.083','4.1'], ['3.256','3.3'], ['0.719','0.8'], ['5.048','5.1'],
+       ['5.2','4.85'], ['7.1','6.99'], ['3.9','3.15'], ['8.05','8.4'] ],
+
+  4: [ ['4.68','4.8'], ['0.67','0.7'], ['9.09','9.1'], ['2.999','3.0'],
+       ['0.45','0.5'], ['6.83','6.9'], ['1.999','2'], ['0.09','0.1'],
+       ['3.47','3.5'], ['0.815','0.9'], ['7.25','7.3'], ['0.499','0.5'] ]
+};
+
+const LEVELS = [
+  { n:1, name:'روستای دهم‌ها', m:'👹', mname:'دیو دهم‌ها', hp:3, time:17,
+    taunts:['هه هه! بیا اگر می‌توانی!','این اعداد کوچک را هم بلد نیستی!','۶۸ از ۸ بزرگ‌تر است... نه؟'],
+    color:'#f43f5e' },
+  { n:2, name:'جنگل صدم‌ها', m:'👻', mname:'شبح صدم‌ها', hp:4, time:15,
+    taunts:['من در مه اعداد پنهان می‌شوم!','۴/۶۸ بزرگ‌تر است، شرط می‌بندم!','عدد طولانی‌تر یعنی قوی‌تر!'],
+    color:'#a855f7' },
+  { n:3, name:'قلعه اعداد فریبکار', m:'🐲', mname:'اژدهای هزارم', hp:5, time:13,
+    taunts:['اینجا هزارم‌ها هم قاطی می‌شوند!','۰/۶۳۸ از ۰/۷ بزرگ‌تر است، مطمئنم!','سه رقم در برابر یک رقم! کی برنده است؟'],
+    color:'#38bdf8' },
+  { n:4, name:'نبرد نهایی', m:'😈', mname:'هیولای رقم‌های فریبکار', hp:7, time:11,
+    taunts:['من خودِ فریبم!','همه فکر می‌کنند رقم بیشتر یعنی بزرگ‌تر!','تو هم شکست می‌خوری، مثل بقیه!'],
+    color:'#ef4444' }
+];
+
+const POWERS = [
+  { id:'freeze', e:'❄️', n:'انجماد',  price:15,
+    desc:'تایمر این سؤال را ۸ ثانیه متوقف می‌کند.' },
+  { id:'hint',   e:'🔍', n:'ذره‌بین',  price:10,
+    desc:'هر دو عدد را با ارزش مکانی یکسان نشان می‌دهد.' },
+  { id:'heal',   e:'❤️', n:'درمان',   price:25,
+    desc:'یک جان اضافه می‌کند (حداکثر ۵).' },
+  { id:'double', e:'⚡', n:'ضربه دوبل', price:20,
+    desc:'حمله‌ی درست بعدی، دو برابر آسیب می‌زند.' }
+];
+
+/* ==========================================================
+   وضعیت بازی
+   ========================================================== */
+const G = {
+  hero:null, lives:3, maxLives:3, timeBonus:0, coinMul:1,
+  coins:0, levelIndex:0, unlocked:1,
+  powers:{ freeze:1, hint:1, heal:0, double:0 },
+  hp:0, hpMax:0, queue:[], current:null,
+  timer:{ on:false, start:0, dur:0, raf:0 },
+  busy:false, doubleNext:false,
+  combo:0, bestCombo:0,
+  log:[], buildResult:null,
+  stats:{ totalQ:0, correctQ:0, trapTotal:0, trapMiss:0, timeout:0, fastCorrect:0, rtSum:0 }
+};
+
+/* ==========================================================
+   مدیریت صفحه
+   ========================================================== */
+function go(id){
+  $$('.screen').forEach(s => s.classList.remove('on'));
+  $('#'+id).classList.add('on');
+  const el = $('#'+id);
+  el.scrollTop = 0;
+}
+
+/* ==========================================================
+   صفحه قهرمان
+   ========================================================== */
+function renderHeroes(){
+  $('#hero-grid').innerHTML = HEROES.map(h => `
+    <button class="hero-card" data-id="${h.id}">
+      <span class="av">${h.emoji}</span>
+      <span class="info" style="flex:1">
+        <span class="nm">${h.name} — <span style="color:#ffc94d">${h.title}</span></span>
+        <span class="pk">✨ ${h.perk}</span>
+      </span>
+      <span style="font-size:1.4rem">➜</span>
+    </button>
+  `).join('');
+  $$('#hero-grid .hero-card').forEach(b => {
+    b.onclick = () => { SFX.click(); pickHero(b.dataset.id); };
+  });
+}
+function pickHero(id){
+  const h = HEROES.find(x => x.id === id);
+  G.hero = h;
+  G.lives = 3; G.maxLives = 3; G.timeBonus = 0; G.coinMul = 1;
+  h.apply();
+  G.unlocked = 1; G.levelIndex = 0;
+  G.coins = 0; G.log = [];
+  G.stats = { totalQ:0, correctQ:0, trapTotal:0, trapMiss:0, timeout:0, fastCorrect:0, rtSum:0 };
+  G.powers = { freeze:1, hint:1, heal:0, double:0 };
+  G.combo = 0; G.bestCombo = 0;
+  G.buildResult = null;
+  renderMap();
+  go('sc-map');
+}
+
+/* ==========================================================
+   نقشه
+   ========================================================== */
+function renderMap(){
+  $('#map-coins').textContent = fa(G.coins);
+  $('#map-lives').textContent = fa(G.lives);
+  $('#map-path').innerHTML = LEVELS.map((L,i) => {
+    const done = i < G.unlocked - 1;
+    const open = i === G.unlocked - 1;
+    const locked = i > G.unlocked - 1;
+    const cls = done ? 'done' : (locked ? 'locked' : '');
+    const st  = done ? '✅' : (locked ? '🔒' : '⚔️');
+    return `
+      <button class="node ${cls}" data-i="${i}" ${locked?'disabled':''}>
+        <span class="m">${L.m}</span>
+        <span class="info">
+          <span class="t">مرحله ${fa(i+1)} — ${L.name}</span>
+          <span class="d">${locked ? 'قفل است' : (done ? 'پیروز شدی!' : L.mname + ' منتظر توست')}</span>
+        </span>
+        <span class="st">${st}</span>
+      </button>`;
+  }).join('');
+  $$('#map-path .node').forEach(b => {
+    b.onclick = () => { SFX.click(); startLevel(+b.dataset.i); };
+  });
+}
+
+/* ==========================================================
+   شروع مرحله
+   ========================================================== */
+function startLevel(i){
+  G.levelIndex = i;
+  const L = LEVELS[i];
+  G.hpMax = L.hp; G.hp = L.hp;
+  G.queue = shuffle(Q[L.n].slice());
+  G.busy = false; G.doubleNext = false; G.combo = 0;
+  G.hero.emoji = G.hero.emoji;
+
+  $('#lv-name').textContent = `مرحله ${fa(i+1)} — ${L.name}`;
+  $('#monster').textContent = L.m;
+  $('#monster').className = 'monster';
+  $('#mname').textContent = L.mname;
+  $('#hpbar').className = 'hpbar';
+  $('#hpbar').querySelector('i').style.width = '100%';
+  $('#speech').textContent = L.taunts[rnd(L.taunts.length)];
+  $('#b-combo').style.display = 'none';
+  updateHUD();
+  renderPowers();
+  go('sc-battle');
+  setTimeout(nextRound, 450);
+}
+
+function updateHUD(){
+  $('#b-coins').textContent = fa(G.coins);
+  let h = '';
+  for(let i=0;i<G.maxLives;i++) h += i < G.lives ? '❤️' : '🖤';
+  $('#b-lives').textContent = h;
+}
+
+/* ==========================================================
+   قدرت‌ها
+   ========================================================== */
+function renderPowers(){
+  $('#powers').innerHTML = POWERS.map(p => {
+    const c = G.powers[p.id] || 0;
+    return `<button class="pw ${c?'':'empty'} ${p.id==='double'&&G.doubleNext?'ready':''}"
+      data-p="${p.id}" ${c?'':'disabled'}>
+      <span class="e">${p.e}</span>
+      <span class="n">${p.n}</span>
+      ${c?`<span class="c">${fa(c)}</span>`:''}
+    </button>`;
+  }).join('');
+  $$('#powers .pw').forEach(b => b.onclick = () => usePower(b.dataset.p));
+}
+
+function usePower(id){
+  if(G.busy || !G.powers[id]) return;
+  SFX.power();
+  if(id === 'freeze'){
+    G.powers.freeze--;
+    G.timer.start += 8000;
+    flashMsg('❄️ زمان متوقف شد!');
+  }
+  else if(id === 'hint'){
+    G.powers.hint--;
+    showHint();
+  }
+  else if(id === 'heal'){
+    if(G.lives >= 5){ flashMsg('❤️ جان‌هایت پر است!'); SFX.click(); return; }
+    G.powers.heal--;
+    G.lives++; updateHUD();
+    flashMsg('❤️ یک جان اضافه شد!');
+  }
+  else if(id === 'double'){
+    G.powers.double--;
+    G.doubleNext = true;
+    flashMsg('⚡ حمله‌ی بعدی دو برابر!');
+  }
+  renderPowers();
+}
+
+function flashMsg(txt){
+  const a = $('#arena');
+  const el = document.createElement('div');
+  el.className = 'fx';
+  el.style.cssText = 'left:50%;top:42%;transform:translateX(-50%);font-size:1.1rem;color:#ffc94d;text-shadow:0 0 18px rgba(255,200,70,.9)';
+  el.textContent = txt;
+  a.appendChild(el);
+  el.animate([{opacity:1,transform:'translate(-50%,0) scale(1)'},
+              {opacity:0,transform:'translate(-50%,-60px) scale(1.2)'}],
+             {duration:1100,easing:'ease-out'}).onfinish = () => el.remove();
+}
+
+/* ==========================================================
+   دور بازی
+   ========================================================== */
+function nextRound(){
+  if(G.hp <= 0) return winLevel();
+  if(G.lives <= 0) return gameOver();
+
+  if(!G.queue.length) G.queue = shuffle(Q[LEVELS[G.levelIndex].n].slice());
+  const pair = G.queue.pop();
+
+  const a = parseFloat(pair[0]), b = parseFloat(pair[1]);
+  const ad = decCount(pair[0]), bd = decCount(pair[1]);
+
+  const longerIsA = ad > bd;
+  const longerVal  = longerIsA ? a : b;
+  const shorterVal = longerIsA ? b : a;
+  const isTrap = ad !== bd && longerVal < shorterVal;
+
+  G.current = {
+    a, b, ad, bd,
+    correctSide: a > b ? 'a' : 'b',
+    isTrap,
+    longerSide: longerIsA ? 'a' : 'b',
+    t0: performance.now()
+  };
+
+  // ترتیب تصادفی روی صفحه
+  const order = Math.random() < .5 ? ['a','b'] : ['b','a'];
+  const runes = [$('#rune-0'), $('#rune-1')];
+  runes.forEach((r,i) => {
+    const side = order[i];
+    r.dataset.side = side;
+    r.className = 'rune';
+    r.disabled = false;
+    r.querySelector('.tag').textContent = '';
+    r.querySelector('.v').textContent = side === 'a' ? numStr(a, ad) : numStr(b, bd);
+    r.onclick = () => answer(side);
+  });
+
+  G.busy = false;
+  $('#qask').textContent = 'کدام عدد بزرگ‌تر است؟ روی آن ضربه بزن تا حمله کنی!';
+  startTimer();
+  renderPowers();
+}
+
+/* ==========================================================
+   تایمر
+   ========================================================== */
+function startTimer(){
+  const L = LEVELS[G.levelIndex];
+  G.timer.dur = (L.time + G.timeBonus) * 1000;
+  G.timer.start = performance.now();
+  G.timer.on = true;
+  cancelAnimationFrame(G.timer.raf);
+  tick();
+}
+function tick(){
+  if(!G.timer.on) return;
+  const left = 1 - (performance.now() - G.timer.start) / G.timer.dur;
+  const bar = $('#tbar');
+  bar.querySelector('i').style.width = Math.max(0, left*100) + '%';
+  bar.classList.toggle('low', left < .32);
+  if(left <= 0){ timeUp(); return; }
+  G.timer.raf = requestAnimationFrame(tick);
+}
+function stopTimer(){
+  G.timer.on = false;
+  cancelAnimationFrame(G.timer.raf);
+}
+
+/* ==========================================================
+   پاسخ
+   ========================================================== */
+function answer(side){
+  if(G.busy) return;
+  G.busy = true;
+  stopTimer();
+
+  const q = G.current;
+  const rt = performance.now() - q.t0;
+  const correct = side === q.correctSide;
+  const choseLonger = side === q.longerSide;
+
+  // ثبت تشخیصی
+  G.stats.totalQ++;
+  G.stats.rtSum += rt;
+  if(correct) G.stats.correctQ++;
+  if(q.isTrap){
+    G.stats.trapTotal++;
+    if(!correct) G.stats.trapMiss++;
+  }
+  G.log.push({
+    pair: numStr(q.a,q.ad) + ' ⟷ ' + numStr(q.b,q.bd),
+    correct, choseLonger, isTrap:q.isTrap,
+    rt: Math.round(rt),
+    level: G.levelIndex + 1
+  });
+
+  $$('.rune').forEach(r => {
+    r.disabled = true;
+    const s = r.dataset.side;
+    if(s === q.correctSide){ r.classList.add('good'); r.querySelector('.tag').textContent = '✅'; }
+    else if(s === side){ r.classList.add('bad'); r.querySelector('.tag').textContent = '❌'; }
+    else r.classList.add('dim');
+  });
+
+  if(correct) onCorrect(q, rt);
+  else onWrong(q, choseLonger);
+}
+
+/* ---------- پاسخ درست ---------- */
+function onCorrect(q, rt){
+  const fast = rt < 4500;
+  let dmg = 1;
+  if(G.doubleNext){ dmg = 2; G.doubleNext = false; renderPowers(); }
+  if(fast) G.stats.fastCorrect++;
+
+  G.combo++;
+  if(G.combo > G.bestCombo) G.bestCombo = G.combo;
+
+  let coins = 5 + (fast ? 3 : 0) + (q.isTrap ? 3 : 0);
+  if(G.combo >= 3) coins += 2;
+  coins = Math.round(coins * G.coinMul);
+
+  G.hp = Math.max(0, G.hp - dmg);
+  G.coins += coins;
+  updateHUD();
+
+  // انیمیشن
+  const mon = $('#monster');
+  mon.classList.add('hurt');
+  setTimeout(() => mon.classList.remove('hurt'), 420);
+  shake();
+  burst(fast ? '⭐' : '💥', fast ? 12 : 8);
+  SFX[fast ? 'crit' : 'hit']();
+  SFX.coin();
+
+  floatNum('-'+dmg, '#f87171', '50%', '34%');
+  floatNum('+'+fa(coins)+' 🪙', '#ffc94d', '72%', '26%');
+
+  const bar = $('#hpbar');
+  bar.querySelector('i').style.width = (G.hp / G.hpMax * 100) + '%';
+  if(G.hp / G.hpMax <= .34) bar.classList.add('low');
+
+  if(G.combo >= 3){
+    $('#b-combo').style.display = '';
+    $('#b-combo').querySelector('span').textContent = fa(G.combo);
+  }
+
+  const L = LEVELS[G.levelIndex];
+  $('#speech').textContent = G.hp <= 0 ? 'آخ! شکست خوردم...' : L.taunts[rnd(L.taunts.length)];
+
+  // بازخورد کوتاه
+  const maxd = Math.max(q.ad, q.bd);
+  const big = q.a > q.b ? q.a : q.b;
+  const bigD = q.a > q.b ? q.ad : q.bd;
+
+  showFB(true,
+    fast ? '⚡ ضربه‌ی برق‌آسا!' : '🗡️ ضربه‌ی درست!',
+    alignHTML(q),
+    q.isTrap
+      ? `<b>${numStr(Math.max(q.a,q.b), maxd)}</b> بزرگ‌تر است، حتی اگر رقم‌هایش کمتر باشد.<br>
+         ${numStr(q.bd===1?q.b:q.a, 1)} = ${numStr((q.bd===1?q.b:q.a), maxd)} — بعد از هم‌طول کردن، مقایسه آسان می‌شود.`
+      : `<b>${numStr(big, bigD)}</b> بزرگ‌تر است.`,
+    G.hp <= 0 ? 'پیروزی! 🎉' : 'هیولا '+fa(G.hp)+' جان دیگر دارد',
+    () => { hideFB(); if(G.hp <= 0) winLevel(); else nextRound(); }
+  );
+}
+
+/* ---------- پاسخ غلط ---------- */
+function onWrong(q, choseLonger){
+  G.combo = 0;
+  $('#b-combo').style.display = 'none';
+  G.lives--;
+  updateHUD();
+
+  const mon = $('#monster');
+  mon.classList.add('attack');
+  setTimeout(() => mon.classList.remove('attack'), 460);
+  shake();
+  SFX.hurt();
+  floatNum('💔 -۱ جان', '#fca5a5', '50%', '68%');
+
+  const L = LEVELS[G.levelIndex];
+  $('#speech').textContent = choseLonger
+    ? 'هه هه! فکر کردی رقم بیشتر یعنی بزرگ‌تر؟ احمق!'
+    : L.taunts[rnd(L.taunts.length)];
+
+  const maxd = Math.max(q.ad, q.bd);
+  const big = q.a > q.b ? q.a : q.b;
+  const bigD = q.a > q.b ? q.ad : q.bd;
+
+  let why = '';
+  if(q.isTrap && choseLonger){
+    why = `<b>تله‌ی هیولا!</b> عددی که رقم‌های بیشتری داشت، در واقع <b>کوچک‌تر</b> بود.<br>
+           برای مقایسه، هر دو را هم‌طول کن:<br>
+           <b>${numStr(q.a, q.ad)}</b> و <b>${numStr(q.b, q.bd)}</b> ←
+           دومی می‌شود <b>${numStr(big === q.a ? q.b : q.a, maxd)}</b>.<br>
+           حالا واضح است که <b>${numStr(big, bigD)}</b> بزرگ‌تر است.`;
+  } else {
+    why = `بخش صحیح را با هم مقایسه کن، بعد رقم‌های بعد از ممیز را یکی‌یکی:
+           دهم با دهم، صدم با صدم.<br>
+           جواب درست: <b>${numStr(big, bigD)}</b>`;
+  }
+
+  showFB(false, '💥 ضربه خوردی!', alignHTML(q), why,
+    G.lives <= 0 ? 'بازی تمام شد' : 'فهمیدم! ادامه بده',
+    () => { hideFB(); if(G.lives <= 0) gameOver(); else nextRound(); });
+}
+
+/* ---------- اتمام زمان ---------- */
+function timeUp(){
+  if(G.busy) return;
+  G.busy = true;
+  stopTimer();
+  G.stats.timeout++;
+  G.combo = 0;
+  $('#b-combo').style.display = 'none';
+
+  const q = G.current;
+  G.stats.totalQ++;
+  if(q.isTrap) G.stats.trapTotal++;
+  G.log.push({
+    pair: numStr(q.a,q.ad) + ' ⟷ ' + numStr(q.b,q.bd),
+    correct:false, choseLonger:false, isTrap:q.isTrap,
+    rt: -1, level: G.levelIndex + 1, timeout:true
+  });
+
+  G.lives--;
+  updateHUD();
+  SFX.timeout(); SFX.hurt();
+  shake();
+  const mon = $('#monster');
+  mon.classList.add('attack');
+  setTimeout(() => mon.classList.remove('attack'), 460);
+  floatNum('💔 -۱ جان', '#fca5a5', '50%', '68%');
+
+  $$('.rune').forEach(r => {
+    r.disabled = true;
+    if(r.dataset.side === q.correctSide){ r.classList.add('good'); r.querySelector('.tag').textContent = '✅'; }
+    else { r.classList.add('dim'); }
+  });
+
+  $('#speech').textContent = 'وقت تمام شد! حالا نوبت من است!';
+
+  const maxd = Math.max(q.ad, q.bd);
+  const big = q.a > q.b ? q.a : q.b;
+  const bigD = q.a > q.b ? q.ad : q.bd;
+
+  showFB(false, '⏰ زمان تمام شد!',
+    alignHTML(q),
+    `فرصت نداشتی. یادت باشد: <b>${numStr(big, bigD)}</b> بزرگ‌تر است.`,
+    G.lives <= 0 ? 'بازی تمام شد' : 'فهمیدم! ادامه بده',
+    () => { hideFB(); if(G.lives <= 0) gameOver(); else nextRound(); });
+}
+
+/* ---------- بازخورد ---------- */
+function alignHTML(q){
+  const maxd = Math.max(q.ad, q.bd);
+  const aFull = numStr(q.a, maxd), bFull = numStr(q.b, maxd);
+  const aEq = q.ad < maxd, bEq = q.bd < maxd;
+  const aBig = q.a > q.b;
+  return `
+    <div class="r ${aBig?'hi':''}">${numStr(q.a, q.ad)} ${aEq?`<small>= ${aFull}</small>`:''}</div>
+    <div class="r ${!aBig?'hi':''}">${numStr(q.b, q.bd)} ${bEq?`<small>= ${bFull}</small>`:''}</div>
+  `;
+}
+let fbAction = null;
+function showFB(ok, big, align, why, btnText, action){
+  const card = $('#fbcard');
+  card.className = 'fbcard ' + (ok ? 'ok' : 'no');
+  $('#fb-big').textContent = big;
+  $('#fb-align').innerHTML = align;
+  $('#fb-why').innerHTML = why;
+  $('#fb-btn').textContent = btnText;
+  fbAction = action;
+  $('#fb').classList.add('on');
+  $('#fb-btn').onclick = () => { SFX.click(); if(fbAction) fbAction(); };
+}
+function hideFB(){ $('#fb').classList.remove('on'); fbAction = null; }
+
+/* ---------- ذرات و لرزش ---------- */
+function shake(){
+  const s = $('#stage');
+  s.classList.remove('shake'); void s.offsetWidth; s.classList.add('shake');
+  setTimeout(() => s.classList.remove('shake'), 340);
+}
+function floatNum(txt, color, left, top){
+  const a = $('#arena');
+  const el = document.createElement('div');
+  el.className = 'fx';
+  el.style.cssText = `left:${left};top:${top};transform:translateX(-50%);font-size:1.25rem;color:${color};text-shadow:0 0 14px ${color}`;
+  el.textContent = txt;
+  a.appendChild(el);
+  el.animate([{opacity:1,transform:'translate(-50%,0)'},{opacity:0,transform:'translate(-50%,-70px) scale(1.3)'}],
+    {duration:1000,easing:'ease-out'}).onfinish = () => el.remove();
+}
+function burst(emoji, n){
+  const a = $('#arena');
+  const rect = a.getBoundingClientRect();
+  for(let i=0;i<n;i++){
+    const el = document.createElement('div');
+    el.className = 'fx';
+    el.style.cssText = `left:50%;top:30%;font-size:${12+rnd(14)}px`;
+    el.textContent = emoji;
+    const tx = (Math.random()*2-1)*160, ty = (Math.random()*2-1)*130;
+    el.style.setProperty('--tx', tx+'px');
+    el.style.setProperty('--ty', ty+'px');
+    el.style.setProperty('--rot', rnd(360)+'deg');
+    a.appendChild(el);
+    el.animate([
+      {transform:'translate(-50%,-50%) scale(1)',opacity:1},
+      {transform:`translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(.2) rotate(${rnd(360)}deg)`,opacity:0}
+    ],{duration:600+rnd(300),easing:'cubic-bezier(.2,.8,.3,1)'}).onfinish = () => el.remove();
+  }
+}
+function showHint(){
+  const q = G.current;
+  const maxd = Math.max(q.ad, q.bd);
+  const aFull = numStr(q.a, maxd), bFull = numStr(q.b, maxd);
+  const mon = $('#speech');
+  mon.innerHTML = `🔍 نگاه کن: <b style="direction:ltr;unicode-bidi:isolate">${numStr(q.a,q.ad)} = ${aFull}</b>
+    و <b style="direction:ltr;unicode-bidi:isolate">${numStr(q.b,q.bd)} = ${bFull}</b>`;
+}
+
+/* ==========================================================
+   پایان مرحله
+   ========================================================== */
+function winLevel(){
+  stopTimer();
+  SFX.win();
+  const L = LEVELS[G.levelIndex];
+  const bonus = Math.round(30 * G.coinMul);
+  G.coins += bonus;
+  updateHUD();
+  burst('⭐', 20);
+  floatNum('+'+fa(bonus)+' 🪙 جایزه', '#ffc94d', '50%', '40%');
+
+  $('#speech').textContent = 'شکست خوردم! تو قوی هستی...';
+  $('#monster').classList.add('dead');
+
+  setTimeout(() => {
+    G.unlocked = Math.max(G.unlocked, G.levelIndex + 2);
+    if(G.levelIndex >= LEVELS.length - 1){
+      // آخرین مرحله → قفل جادویی
+      go('sc-build');
+      $('#build-inp').value = '';
+      $('#build-msg').textContent = '';
+      $('#build-msg').className = 'msg';
+      $('#build-btn').onclick = checkBuild;
+    } else {
+      renderShop();
+      go('sc-shop');
+    }
+  }, 1200);
+}
+
+function gameOver(){
+  stopTimer();
+  SFX.lose();
+  const L = LEVELS[G.levelIndex];
+  showFB(false, '💀 باختی!',
+    `<div class="r">هیولا پیروز شد</div>`,
+    `نگران نباش، قهرمان‌ها دوباره بلند می‌شوند.<br>
+     مرحله‌ی «${L.name}» را دوباره امتحان کن.<br>
+     <b>یادت باشد: اول بخش صحیح، بعد دهم، بعد صدم.</b>`,
+    'تلاش دوباره 🔄',
+    () => {
+      hideFB();
+      G.lives = G.maxLives;
+      updateHUD();
+      startLevel(G.levelIndex);
+    });
+}
+
+/* ==========================================================
+   فروشگاه
+   ========================================================== */
+function renderShop(){
+  $('#shop-coins').textContent = fa(G.coins);
+  $('#shop-grid').innerHTML = POWERS.map(p => `
+    <div class="item">
+      <span class="e">${p.e}</span>
+      <span class="d">
+        <span class="t">${p.n} ${G.powers[p.id] ? `<span style="color:#9fb0ff;font-size:.8rem">(داری: ${fa(G.powers[p.id])})</span>` : ''}</span>
+        <span class="s">${p.desc}</span>
+      </span>
+      <button class="buy" data-p="${p.id}" ${G.coins < p.price ? 'disabled' : ''}>
+        🪙 ${fa(p.price)}
+      </button>
+    </div>
+  `).join('');
+  $$('#shop-grid .buy').forEach(b => {
+    b.onclick = () => {
+      const p = POWERS.find(x => x.id === b.dataset.p);
+      if(G.coins < p.price) return;
+      if(p.id === 'heal' && G.lives >= 5){ SFX.click(); return; }
+      G.coins -= p.price;
+      G.powers[p.id] = (G.powers[p.id] || 0) + 1;
+      if(p.id === 'heal'){ G.lives++; updateHUD(); }
+      SFX.coin(); SFX.power();
+      renderShop();
+    };
+  });
+  $('#shop-done').onclick = () => { SFX.click(); startLevel(G.levelIndex + 1); };
+}
+
+/* ==========================================================
+   قفل جادویی
+   ========================================================== */
+function parseDecimal(str){
+  if(!str) return null;
+  let s = String(str).trim();
+  for(let i=0;i<10;i++){
+    s = s.split(FA[i]).join(String(i));
+    s = s.split('٠١٢٣٤٥٦٧٨٩'[i]).join(String(i));
+  }
+  s = s.replace(/[٫،,\/]/g,'.').replace(/\s/g,'');
+  if(!/^\d*\.?\d+$/.test(s)) return null;
+  const v = parseFloat(s);
+  return isNaN(v) ? null : v;
+}
+function checkBuild(){
+  const raw = $('#build-inp').value;
+  const msg = $('#build-msg');
+  const v = parseDecimal(raw);
+
+  if(v === null){
+    msg.className = 'msg warn';
+    msg.textContent = 'یک عدد اعشاری معتبر بنویس، مثلاً ۰/۵';
+    return;
+  }
+  let s = String(raw).trim();
+  for(let i=0;i<10;i++) s = s.split(FA[i]).join(String(i));
+  s = s.replace(/[٫،,\/]/g,'.');
+  const dec = decCount(s);
+
+  if(v >= 0.7){
+    msg.className = 'msg no';
+    msg.innerHTML = `❌ این عدد کوچک‌تر از ۰/۷ نیست.<br>
+      برای کوچک‌تر بودن از ۰/۷، رقم دهم باید کمتر از ۷ باشد.`;
+    return;
+  }
+  if(dec <= 1){
+    msg.className = 'msg warn';
+    msg.innerHTML = `⚠️ کوچک‌تر از ۰/۷ است، اما رقم‌های اعشاری بیشتری ندارد (فقط ${fa(dec)} رقم).<br>
+      مثلاً ۰/۶۵ یا ۰/۶۸ را امتحان کن.`;
+    return;
+  }
+  msg.className = 'msg ok';
+  msg.innerHTML = `🎉 عالی! <b style="direction:ltr;unicode-bidi:isolate">${numStr(v, dec)}</b> کوچک‌تر از ۰/۷ است، ولی رقم‌های بیشتری دارد.<br>
+    یعنی فهمیدی که «رقم بیشتر» به معنی «بزرگ‌تر» نیست!`;
+  G.buildResult = 'ok';
+  SFX.win();
+  burst('✨', 24);
+  setTimeout(() => endGame(true), 1600);
+}
+
+/* ==========================================================
+   پایان بازی
+   ========================================================== */
+function endGame(buildOK){
+  if(G.buildResult === null) G.buildResult = buildOK ? 'ok' : 'skip';
+  stopTimer();
+  SFX.win();
+
+  const s = G.stats;
+  const acc = s.totalQ ? Math.round(s.correctQ / s.totalQ * 100) : 0;
+  const trapRate = s.trapTotal ? s.trapMiss / s.trapTotal : 0;
+
+  let medal = '🥉', title = 'قهرمان شهر اعشار', sub = 'شهر را نجات دادی!';
+  if(acc >= 85 && G.lives >= 3){ medal = '🏆'; title = 'قهرمان افسانه‌ای!'; sub = 'بی‌نقص مبارزه کردی!'; }
+  else if(acc >= 70){ medal = '🥇'; title = 'قهرمان بزرگ'; sub = 'شهر به تو افتخار می‌کند!'; }
+  else if(acc >= 55){ medal = '🥈'; title = 'قهرمان دلاور'; sub = 'پیروز شدی!'; }
+
+  $('#medal').textContent = medal;
+  $('#end-title').textContent = title;
+  $('#end-sub').innerHTML = sub + '<br>' +
+    (G.buildResult === 'ok'
+      ? '🔓 قفل جادویی شهر را باز کردی!'
+      : '🔐 قفل جادویی هنوز بسته است، اما هیولا شکست خورد.');
+
+  $('#e-coins').textContent = fa(G.coins);
+  $('#e-acc').textContent = fa(acc) + '٪';
+  $('#e-combo').textContent = fa(G.bestCombo);
+  $('#e-lives').textContent = fa(G.lives);
+
+  // ---- گزارش تحلیلی (پنهان از دانش‌آموز) ----
+  let tag, txt;
+  if(trapRate >= .7){
+    tag = '<span class="tag red">شواهد قوی</span>';
+    txt = `در <b>${fa(s.trapMiss)}</b> مورد از <b>${fa(s.trapTotal)}</b> موقعیت بحرانی،
+      عددی انتخاب شده که <b>رقم‌های بیشتری</b> داشت — حتی وقتی کوچک‌تر بود.<br>
+      <b>الگوی خطا:</b> Longer-is-Larger<br>
+      <b>بدفهمی زیربنایی:</b> Whole-Number Bias / تفکر مبتنی بر اعداد صحیح
+      و ضعف در درک ارزش مکانی اعشار.`;
+  } else if(trapRate >= .4){
+    tag = '<span class="tag yellow">شواهد متوسط</span>';
+    txt = `در <b>${fa(s.trapMiss)}</b> مورد از <b>${fa(s.trapTotal)}</b> موقعیت بحرانی خطای طول‌محور دیده شد.
+      الگو پایدار نیست، اما ارزش مکانی اعشار هنوز تثبیت نشده است.`;
+  } else {
+    tag = '<span class="tag green">شواهد ضعیف</span>';
+    txt = `فقط <b>${fa(s.trapMiss)}</b> مورد از <b>${fa(s.trapTotal)}</b> موقعیت بحرانی خطا داشت.
+      درک ارزش مکانی نسبتاً درست است.`;
+  }
+  const avgRT = s.totalQ ? Math.round(s.rtSum / s.totalQ / 100) / 10 : 0;
+  const traps = G.log.filter(l => l.isTrap);
+  const repeat = traps.filter((l,i) => !l.correct && i > 0 && traps.slice(0,i).some(p => !p.correct));
+
+  $('#diag-text').innerHTML = `
+    ${tag}
+    ${txt}
+    <br><br>
+    <b>آمار:</b> دقت کل ${fa(acc)}٪ • پاسخ سریع ${fa(s.fastCorrect)} • اتمام زمان ${fa(s.timeout)}
+    • میانگین زمان پاسخ ${fa(avgRT)} ثانیه
+    <br>
+    <b>سؤال‌های تله‌ای:</b> ${fa(s.trapTotal)} سؤال، ${fa(s.trapMiss)} خطا
+    <br>
+    <b>مرحله‌ی ساخت عدد:</b> ${
+      G.buildResult === 'ok' ? '✅ موفق — قانون «رقم بیشتر = بزرگ‌تر» را کنار گذاشت'
+      : G.buildResult === 'no' ? '❌ ناموفق'
+      : G.buildResult === 'warn' ? '⚠️ ناقص' : '— رد شد'
+    }
+  `;
+
+  $('#diag-rev').innerHTML = G.log.map(l => `
+    <div class="it ${l.correct ? '' : 'bad'}">
+      <div class="p">${l.pair}</div>
+      <div style="color:#94a3b8;font-size:.72rem;margin-top:2px">
+        ${l.correct ? '✅ درست' : (l.timeout ? '⏰ زمان تمام' : '❌ غلط')}
+        ${l.isTrap ? ' • <span style="color:#fbbf24">سؤال تله‌ای</span>' : ''}
+        ${l.choseLonger && !l.correct ? ' • <span style="color:#f87171">انتخاب عدد طولانی‌تر</span>' : ''}
+        ${l.rt > 0 ? ' • ' + fa((l.rt/1000).toFixed(1)) + ' ثانیه' : ''}
+      </div>
+    </div>
+  `).join('');
+
+  go('sc-end');
+}
+
+/* ==========================================================
+   راه‌اندازی
+   ========================================================== */
+renderHeroes();
+
+$('#to-hero').onclick = () => { SFX.click(); go('sc-hero'); };
+$('#to-shop').onclick = () => { SFX.click(); renderShop(); go('sc-shop'); };
+$('#shop-done').onclick = () => { SFX.click(); startLevel(G.levelIndex + 1); };
+$('#build-btn').onclick = checkBuild;
+$('#build-inp').addEventListener('keydown', e => { if(e.key === 'Enter') checkBuild(); });
+$('#build-skip').onclick = () => { G.buildResult = 'skip'; endGame(false); };
+$('#again').onclick = () => { SFX.click(); go('sc-hero'); };
+
+// اولین لمس = فعال شدن صدا در موبایل
+document.addEventListener('touchstart', () => ac(), {once:true});
+document.addEventListener('click', () => ac(), {once:true});
+</script>
+</body>
+</html>

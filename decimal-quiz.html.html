@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>کدام بزرگ‌تر است؟ | بازی تشخیص بدفهمی اعداد اعشاری</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1e293b; --muted:#64748b;
+  --brand:#4f46e5; --brand2:#7c3aed;
+  --ok:#10b981; --okbg:#ecfdf5;
+  --bad:#ef4444; --badbg:#fef2f2;
+  --card:#ffffff;
+  --shadow:0 10px 30px rgba(30,41,59,.10);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Vazirmatn',Tahoma,'Segoe UI',sans-serif;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #dbeafe 0%, transparent 60%),
+    radial-gradient(1000px 600px at 110% 10%, #fae8ff 0%, transparent 55%),
+    linear-gradient(160deg,#eef4ff,#fdf0f7);
+  min-height:100vh;color:var(--ink);
+  display:flex;align-items:center;justify-content:center;padding:16px;
+}
+#app{width:100%;max-width:760px}
+.screen{display:none;animation:fade .35s ease}
+.screen.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.panel{
+  background:var(--card);border-radius:26px;padding:26px 22px;
+  box-shadow:var(--shadow);border:1px solid rgba(148,163,184,.18);
+}
+
+/* ---------- صفحه شروع ---------- */
+h1{font-size:1.7rem;margin:0 0 10px;font-weight:800;letter-spacing:-.5px}
+h1 span{background:linear-gradient(90deg,var(--brand),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{color:var(--muted);line-height:1.9;font-size:.98rem;margin:0 0 18px}
+.rules{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:16px;padding:14px 16px;margin-bottom:20px}
+.rules li{margin:6px 0;color:#334155;font-size:.93rem;line-height:1.7}
+.btn{
+  border:0;cursor:pointer;font-family:inherit;font-weight:800;font-size:1.05rem;
+  padding:15px 26px;border-radius:16px;color:#fff;width:100%;
+  background:linear-gradient(90deg,var(--brand),var(--brand2));
+  box-shadow:0 8px 20px rgba(79,70,229,.32);
+  transition:transform .15s, box-shadow .15s;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(79,70,229,.4)}
+.btn:active{transform:translateY(0)}
+.btn.ghost{background:#fff;color:var(--brand);border:2px solid #ddd6fe;box-shadow:none}
+
+/* ---------- نوار بالا ---------- */
+.topbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.chip{
+  background:#fff;border-radius:999px;padding:7px 14px;font-size:.85rem;font-weight:600;
+  color:var(--muted);box-shadow:0 4px 12px rgba(30,41,59,.07);white-space:nowrap;
+}
+.chip b{color:var(--brand)}
+.bar{flex:1;height:10px;border-radius:999px;background:#e2e8f0;overflow:hidden}
+.bar>i{display:block;height:100%;width:0;border-radius:999px;
+  background:linear-gradient(90deg,var(--brand),var(--brand2));transition:width .4s ease}
+
+/* ---------- کارت‌های عدد ---------- */
+.question-txt{text-align:center;font-size:1.05rem;font-weight:600;color:#475569;margin:6px 0 16px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.num-card{
+  position:relative;cursor:pointer;font-family:inherit;
+  background:#fff;border:3px solid #e2e8f0;border-radius:22px;
+  padding:26px 8px;transition:transform .15s,border-color .15s,background .15s;
+  box-shadow:0 6px 18px rgba(30,41,59,.06);
+}
+.num-card:hover:not(.done){transform:translateY(-5px);border-color:#c7d2fe}
+.num-card .num{
+  display:block;font-size:2.3rem;font-weight:800;letter-spacing:1px;
+  direction:ltr;unicode-bidi:isolate;color:#1e293b;
+}
+.num-card.correct{border-color:var(--ok);background:var(--okbg)}
+.num-card.correct .num{color:#047857}
+.num-card.wrong{border-color:var(--bad);background:var(--badbg);animation:shake .35s}
+.num-card.wrong .num{color:#b91c1c}
+.num-card.done{cursor:default}
+.num-card .mark{position:absolute;top:8px;left:12px;font-size:1.3rem}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-9px)}75%{transform:translateX(9px)}}
+
+/* ---------- بازخورد ---------- */
+.feedback{border-radius:20px;padding:18px;display:none;animation:fade .3s}
+.feedback.show{display:block}
+.feedback.ok{background:var(--okbg);border:1px solid #a7f3d0}
+.feedback.no{background:var(--badbg);border:1px solid #fecaca}
+.verdict{font-weight:800;font-size:1.1rem;margin-bottom:10px}
+.feedback.ok .verdict{color:#047857}
+.feedback.no .verdict{color:#b91c1c}
+.align{
+  background:#fff;border-radius:14px;padding:12px 14px;margin:10px 0;
+  display:flex;flex-direction:column;gap:6px;align-items:flex-start;
+  border:1px solid #e2e8f0;
+}
+.align .row{font-size:1.25rem;font-weight:700;direction:ltr;unicode-bidi:isolate;color:#334155}
+.align .row small{font-size:.75rem;color:var(--muted);font-weight:600;margin-inline-start:10px}
+.explain{font-size:.95rem;line-height:1.9;color:#334155}
+.conclusion{font-size:1rem;font-weight:800;color:var(--brand);margin-top:8px;direction:ltr;unicode-bidi:isolate;text-align:right}
+
+/* ---------- مرحله ساخت عدد ---------- */
+.build-box{text-align:center}
+.build-box .task{font-size:1.05rem;font-weight:700;line-height:2;color:#334155;margin-bottom:16px}
+.build-box .task em{color:var(--brand);font-style:normal}
+input[type=text]{
+  width:100%;max-width:280px;text-align:center;font-family:inherit;
+  font-size:1.8rem;font-weight:800;padding:12px;border-radius:16px;
+  border:3px solid #e2e8f0;outline:none;direction:ltr;unicode-bidi:isolate;
+  transition:border-color .15s;
+}
+input[type=text]:focus{border-color:var(--brand)}
+.build-msg{margin-top:14px;font-size:.98rem;font-weight:700;line-height:1.9;min-height:28px}
+.build-msg.ok{color:#047857}
+.build-msg.no{color:#b91c1c}
+.build-msg.warn{color:#b45309}
+
+/* ---------- گزارش ---------- */
+.score-hero{text-align:center;margin-bottom:18px}
+.score-hero .big{font-size:3rem;font-weight:800;background:linear-gradient(90deg,var(--brand),var(--brand2));
+  -webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.1}
+.score-hero .sub{color:var(--muted);font-size:.9rem;margin-top:4px}
+.diag{border-radius:18px;padding:16px;margin-bottom:16px;line-height:1.95;font-size:.97rem}
+.diag.strong{background:#fef2f2;border:1px solid #fecaca}
+.diag.mid{background:#fffbeb;border:1px solid #fde68a}
+.diag.low{background:#ecfdf5;border:1px solid #a7f3d0}
+.diag h3{margin:0 0 8px;font-size:1.05rem}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.stat{background:#f8fafc;border-radius:14px;padding:12px;text-align:center}
+.stat .v{font-size:1.5rem;font-weight:800;color:var(--brand)}
+.stat .k{font-size:.78rem;color:var(--muted);margin-top:3px}
+.review{max-height:250px;overflow:auto;border-radius:14px;border:1px solid #e2e8f0}
+.review .item{padding:11px 14px;border-bottom:1px solid #f1f5f9;font-size:.88rem;line-height:1.8}
+.review .item:last-child{border-bottom:0}
+.review .item .pair{direction:ltr;unicode-bidi:isolate;font-weight:800;font-size:1rem}
+.review .item .why{color:var(--muted);margin-top:3px}
+.review .item.bad{background:#fff7f7}
+.footer-note{font-size:.78rem;color:#94a3b8;text-align:center;margin-top:14px;line-height:1.8}
+@media(max-width:420px){
+  .num-card .num{font-size:1.85rem}
+  .num-card{padding:20px 6px}
+  h1{font-size:1.4rem}
+  .panel{padding:20px 15px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ================= صفحه شروع ================= -->
+  <section id="screen-start" class="screen active">
+    <div class="panel">
+      <h1>کدام <span>بزرگ‌تر</span> است؟</h1>
+      <p class="lead">
+        در این بازی ۱۲ جفت عدد اعشاری می‌بینی. روی عددِ <b>بزرگ‌تر</b> کلیک کن.
+        بعد از هر پاسخ، دلیل درست نشان داده می‌شود.
+      </p>
+      <div class="rules">
+        <ul style="margin:0;padding-inline-start:20px">
+          <li>۱۲ سؤال، هر سؤال چند ثانیه</li>
+          <li>بازخورد فوری با نمایش ارزش مکانی</li>
+          <li>در پایان، یک مرحله‌ی چالشی «ساختن عدد»</li>
+          <li>گزارش نهایی: آیا الگوی «رقم بیشتر = عدد بزرگ‌تر» دیده می‌شود؟</li>
+        </ul>
+      </div>
+      <button class="btn" id="btn-start">شروع بازی 🎮</button>
+      <p class="footer-note">مناسب کتاب کار، کلاس، یا تمرین خانگی — روی گوشی و کامپیوتر اجرا می‌شود.</p>
+    </div>
+  </section>
+
+  <!-- ================= صفحه بازی ================= -->
+  <section id="screen-game" class="screen">
+    <div class="topbar">
+      <div class="chip">سؤال <b id="q-now">۱</b> از <b id="q-all">۱۲</b></div>
+      <div class="bar"><i id="progress"></i></div>
+      <div class="chip">امتیاز <b id="score">۰</b></div>
+    </div>
+
+    <div class="panel">
+      <p class="question-txt">روی عددِ بزرگ‌تر کلیک کن 👇</p>
+      <div class="cards">
+        <button class="num-card" id="card-0"><span class="mark"></span><span class="num" dir="ltr"></span></button>
+        <button class="num-card" id="card-1"><span class="mark"></span><span class="num" dir="ltr"></span></button>
+      </div>
+
+      <div class="feedback" id="feedback">
+        <div class="verdict" id="verdict"></div>
+        <div class="align" id="align"></div>
+        <div class="explain" id="explain"></div>
+        <div class="conclusion" id="conclusion"></div>
+        <button class="btn" id="btn-next" style="margin-top:14px">سؤال بعدی ←</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= صفحه ساخت عدد ================= -->
+  <section id="screen-build" class="screen">
+    <div class="panel build-box">
+      <h1 style="font-size:1.35rem">مرحله‌ی چالشی 🧠</h1>
+      <p class="task">
+        یک عدد اعشاری بنویس که از <em>۰/۷</em> کوچک‌تر باشد،<br>
+        اما <em>رقم‌های اعشاری بیشتری</em> داشته باشد.
+      </p>
+      <input type="text" id="build-input" placeholder="۰/..." autocomplete="off">
+      <div class="build-msg" id="build-msg"></div>
+      <button class="btn" id="btn-build" style="margin-top:16px">بررسی پاسخ</button>
+      <button class="btn ghost" id="btn-skip" style="margin-top:10px">رد کردن و دیدن گزارش</button>
+    </div>
+  </section>
+
+  <!-- ================= صفحه گزارش ================= -->
+  <section id="screen-report" class="screen">
+    <div class="panel">
+      <div class="score-hero">
+        <div class="big" id="rep-score">۰</div>
+        <div class="sub" id="rep-score-sub">از ۱۲ سؤال</div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="v" id="rep-crit">۰</div><div class="k">خطا در موقعیت‌های بحرانی</div></div>
+        <div class="stat"><div class="v" id="rep-build">—</div><div class="k">مرحله‌ی ساخت عدد</div></div>
+      </div>
+
+      <div class="diag" id="rep-diag"></div>
+
+      <h3 style="font-size:1rem;margin:0 0 8px">مرور پاسخ‌ها</h3>
+      <div class="review" id="rep-review"></div>
+
+      <button class="btn" id="btn-restart" style="margin-top:18px">شروع دوباره 🔄</button>
+      <p class="footer-note">
+        این بازی برای تشخیص الگوی <b>Longer-is-Larger</b> و بدفهمی
+        <b>Whole-Number Bias</b> طراحی شده است.
+      </p>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   ابزارهای کمکی
+   ============================================================ */
+const FA_DIGITS = '۰۱۲۳۴۵۶۷۸۹';
+
+function toFa(s){
+  return String(s).replace(/\d/g, d => FA_DIGITS[+d]);
+}
+/** عدد را با جداکننده‌ی اعشاری فارسی «/» و ارقام فارسی برمی‌گرداند */
+function fmt(value, decimals){
+  return toFa(value.toFixed(decimals)).replace('.', '/');
+}
+const shuffle = a => a.map(x => [Math.random(), x]).sort((p,q) => p[0]-q[0]).map(x => x[1]);
+const PLACE = ['دهم', 'صدم', 'هزارم'];
+
+/* ============================================================
+   بانک سؤال
+   type = 'critical' : عددِ با رقم‌های بیشتر، کوچک‌تر است  ← سنجش بدفهمی
+   type = 'control'  : عددِ با رقم‌های بیشتر، واقعاً بزرگ‌تر است ← سؤال کنترل
+   ============================================================ */
+const CRITICAL = [
+  {a:4.68, b:4.8,  da:2, db:1},
+  {a:3.72, b:3.8,  da:2, db:1},
+  {a:0.45, b:0.5,  da:2, db:1},
+  {a:2.36, b:2.4,  da:2, db:1},
+  {a:0.72, b:0.8,  da:2, db:1},
+  {a:5.27, b:5.3,  da:2, db:1},
+  {a:1.29, b:1.3,  da:2, db:1},
+  {a:0.63, b:0.7,  da:2, db:1},
+  {a:2.45, b:2.5,  da:2, db:1},
+  {a:7.08, b:7.1,  da:2, db:1},
+  {a:0.35, b:0.4,  da:2, db:1},
+  {a:3.85, b:3.9,  da:2, db:1},
+  {a:6.19, b:6.2,  da:2, db:1},
+  {a:0.81, b:0.9,  da:2, db:1}
+].map(q => ({...q, type:'critical'}));
+
+const CONTROL = [
+  {a:0.91, b:0.9,  da:2, db:1},
+  {a:2.13, b:2.1,  da:2, db:1},
+  {a:0.55, b:0.5,  da:2, db:1},
+  {a:6.34, b:6.3,  da:2, db:1},
+  {a:1.47, b:1.4,  da:2, db:1},
+  {a:0.28, b:0.2,  da:2, db:1}
+].map(q => ({...q, type:'control'}));
+
+const N_CRITICAL = 8;
+const N_CONTROL  = 4;
+const TOTAL_Q    = N_CRITICAL + N_CONTROL;
+
+/* ============================================================
+   وضعیت بازی
+   ============================================================ */
+let state = {
+  questions: [],
+  index: 0,
+  score: 0,
+  answers: [],
+  locked: false,
+  buildResult: null   // 'ok' | 'no' | 'skip'
+};
+
+/* ============================================================
+   صداهای ساده (اختیاری)
+   ============================================================ */
+let audioCtx = null;
+function beep(freq, dur, type){
+  try{
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = type || 'sine';
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(0.06, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(); o.stop(audioCtx.currentTime + dur);
+  }catch(e){}
+}
+const sndOk  = () => { beep(660,.10); setTimeout(()=>beep(880,.14),90); };
+const sndBad = () => beep(180,.22,'square');
+
+/* ============================================================
+   ساخت توضیح خودکار بر پایه‌ی ارزش مکانی
+   ============================================================ */
+function buildExplanation(q){
+  const maxd = Math.max(q.da, q.db);
+  const A = q.a.toFixed(maxd);
+  const B = q.b.toFixed(maxd);
+  const [ai, af] = A.split('.');
+  const [bi, bf] = B.split('.');
+
+  const larger  = Math.max(q.a, q.b);
+  const smaller = Math.min(q.a, q.b);
+  const largerDec  = (larger === q.a) ? q.da : q.db;
+  const smallerDec = (smaller === q.a) ? q.da : q.db;
+
+  let text = '';
+  if(ai !== bi){
+    text = `بخش صحیح دو عدد برابر نیست: ${toFa(ai)} در مقابل ${toFa(bi)}. هر عددی که بخش صحیحش بزرگ‌تر باشد، خودش بزرگ‌تر است.`;
+  } else {
+    for(let i = 0; i < maxd; i++){
+      if(af[i] !== bf[i]){
+        text = `بخش صحیح هر دو ${toFa(ai)} است. در جایگاه <b>${PLACE[i]}</b>، رقم ${toFa(af[i])} در مقابل ${toFa(bf[i])} قرار دارد و ${toFa(bf[i])} بزرگ‌تر است.`;
+        break;
+      }
+    }
+    if(!text) text = 'دو عدد کاملاً برابرند.';
+  }
+
+  const alignHtml = `
+    <div class="row">${fmt(q.a, q.da)} <small>${q.da < maxd ? '= ' + fmt(q.a, maxd) : ''}</small></div>
+    <div class="row">${fmt(q.b, q.db)} <small>${q.db < maxd ? '= ' + fmt(q.b, maxd) : ''}</small></div>
+  `;
+
+  return {
+    alignHtml,
+    text,
+    conclusion: `${fmt(larger, largerDec)} > ${fmt(smaller, smallerDec)}`
+  };
+}
+
+/* ============================================================
+   مدیریت صفحه‌ها
+   ============================================================ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ============================================================
+   شروع بازی
+   ============================================================ */
+function startGame(){
+  const crit = shuffle(CRITICAL).slice(0, N_CRITICAL);
+  const ctrl = shuffle(CONTROL).slice(0, N_CONTROL);
+  state = {
+    questions: shuffle([...crit, ...ctrl]).map(q => ({
+      ...q,
+      // ترتیب تصادفی دو گزینه روی صفحه
+      order: Math.random() < 0.5 ? ['a','b'] : ['b','a']
+    })),
+    index: 0,
+    score: 0,
+    answers: [],
+    locked: false,
+    buildResult: null
+  };
+  document.getElementById('q-all').textContent = toFa(TOTAL_Q);
+  document.getElementById('score').textContent = toFa(0);
+  showScreen('screen-game');
+  renderQuestion();
+}
+
+/* ============================================================
+   نمایش سؤال
+   ============================================================ */
+function renderQuestion(){
+  const q = state.questions[state.index];
+  state.locked = false;
+
+  document.getElementById('q-now').textContent = toFa(state.index + 1);
+  document.getElementById('progress').style.width =
+    ((state.index) / TOTAL_Q * 100) + '%';
+
+  const cards = [document.getElementById('card-0'), document.getElementById('card-1')];
+
+  q.order.forEach((side, i) => {
+    const card = cards[i];
+    const numEl = card.querySelector('.num');
+    const markEl = card.querySelector('.mark');
+    card.className = 'num-card';
+    markEl.textContent = '';
+    card.dataset.side = side;
+    numEl.textContent = side === 'a' ? fmt(q.a, q.da) : fmt(q.b, q.db);
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback';
+}
+
+/* ============================================================
+   پاسخ کاربر
+   ============================================================ */
+function answer(clickedSide){
+  if(state.locked) return;
+  state.locked = true;
+
+  const q = state.questions[state.index];
+  const correctSide = (q.a > q.b) ? 'a' : 'b';
+  const isCorrect = (clickedSide === correctSide);
+
+  // آیا عددِ انتخاب‌شده «رقم‌های بیشتری» داشت؟
+  const clickedDecimals = clickedSide === 'a' ? q.da : q.db;
+  const otherDecimals   = clickedSide === 'a' ? q.db : q.da;
+  const choseLonger = clickedDecimals > otherDecimals;
+
+  // خطای اختصاصی «رقم بیشتر = بزرگ‌تر»
+  const longerError = (!isCorrect && choseLonger);
+
+  state.answers.push({
+    q, clickedSide, correctSide, isCorrect, longerError,
+    choseLonger,
+    type: q.type
+  });
+
+  if(isCorrect) state.score++;
+  document.getElementById('score').textContent = toFa(state.score);
+
+  // ---- رنگ‌آمیزی کارت‌ها ----
+  document.querySelectorAll('.num-card').forEach(card => {
+    const side = card.dataset.side;
+    card.classList.add('done');
+    if(side === correctSide){
+      card.classList.add('correct');
+      card.querySelector('.mark').textContent = '✅';
+    } else if(side === clickedSide){
+      card.classList.add('wrong');
+      card.querySelector('.mark').textContent = '❌';
+    }
+  });
+
+  // ---- بازخورد ----
+  const info = buildExplanation(q);
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show ' + (isCorrect ? 'ok' : 'no');
+
+  document.getElementById('verdict').textContent = isCorrect
+    ? '✅ درست! آفرین.'
+    : '❌ نادرست.';
+
+  document.getElementById('align').innerHTML = info.alignHtml;
+  document.getElementById('explain').innerHTML = info.text;
+  document.getElementById('conclusion').innerHTML = 'نتیجه: ' + info.conclusion;
+
+  // پیام ویژه برای خطای «رقم بیشتر»
+  if(longerError){
+    document.getElementById('explain').innerHTML +=
+      '<br><br><b>توجه:</b> اینجا عددی که رقم‌های بیشتری داشت، عدد <b>کوچک‌تری</b> بود. ' +
+      'بعد از ممیز، رقم‌ها «دهم» و «صدم» و «هزارم» را نشان می‌دهند؛ ' +
+      'پس ۸ دهم (۰/۸) از ۶۸ صدم (۰/۶۸) بزرگ‌تر است.';
+  }
+
+  isCorrect ? sndOk() : sndBad();
+
+  document.getElementById('progress').style.width =
+    ((state.index + 1) / TOTAL_Q * 100) + '%';
+
+  const nextBtn = document.getElementById('btn-next');
+  nextBtn.textContent = (state.index + 1 >= TOTAL_Q)
+    ? 'پایان و مرحله‌ی چالشی ←'
+    : 'سؤال بعدی ←';
+}
+
+/* ============================================================
+   رفتن به سؤال بعد / پایان
+   ============================================================ */
+function nextQuestion(){
+  state.index++;
+  if(state.index >= TOTAL_Q){
+    showScreen('screen-build');
+  } else {
+    renderQuestion();
+  }
+}
+
+/* ============================================================
+   مرحله‌ی ساخت عدد
+   ============================================================ */
+function parseDecimal(str){
+  if(!str) return null;
+  let s = String(str).trim();
+  for(let i = 0; i < 10; i++){
+    s = s.split(FA_DIGITS[i]).join(String(i));
+    s = s.split('٠١٢٣٤٥٦٧٨٩'[i]).join(String(i));
+  }
+  s = s.replace(/[٫،,\/]/g, '.').replace(/\s/g, '');
+  if(!/^\d*\.?\d+$/.test(s)) return null;
+  const v = parseFloat(s);
+  return isNaN(v) ? null : v;
+}
+function decimalCount(str){
+  let s = String(str).trim();
+  for(let i = 0; i < 10; i++) s = s.split(FA_DIGITS[i]).join(String(i));
+  s = s.replace(/[٫،,\/]/g, '.');
+  const parts = s.split('.');
+  return parts.length > 1 ? parts[1].length : 0;
+}
+
+function checkBuild(){
+  const raw = document.getElementById('build-input').value;
+  const msg = document.getElementById('build-msg');
+  const v = parseDecimal(raw);
+
+  if(v === null){
+    msg.className = 'build-msg warn';
+    msg.textContent = 'یک عدد اعشاری معتبر بنویس، مثلاً ۰/۵';
+    return;
+  }
+  const dec = decimalCount(raw);
+
+  if(v >= 0.7){
+    msg.className = 'build-msg no';
+    msg.innerHTML = `❌ این عدد کوچک‌تر از ۰/۷ نیست.<br>برای اینکه کوچک‌تر از ۰/۷ باشد، باید در جایگاه دهم رقمش کمتر از ۷ باشد.`;
+    state.buildResult = state.buildResult === 'ok' ? 'ok' : 'no';
+    return;
+  }
+  if(dec <= 1){
+    msg.className = 'build-msg warn';
+    msg.innerHTML = `⚠️ درست است که کوچک‌تر از ۰/۷ است، اما رقم‌های اعشاری <b>بیشتری</b> ندارد (فقط ${toFa(dec)} رقم).<br>مثلاً ۰/۶۵ یا ۰/۶۸ را امتحان کن.`;
+    if(state.buildResult !== 'ok') state.buildResult = 'warn';
+    return;
+  }
+  // موفق
+  msg.className = 'build-msg ok';
+  msg.innerHTML = `🎉 عالی! <span dir="ltr" style="font-weight:800">${toFa(raw.trim()).replace(/[٫,\/]/,'/')}</span> کوچک‌تر از ۰/۷ است، ولی رقم‌های بیشتری دارد.<br>
+  یعنی فهمیدی که «رقم بیشتر» به معنی «عدد بزرگ‌تر» نیست.`;
+  state.buildResult = 'ok';
+  document.getElementById('btn-build').textContent = 'دیدن گزارش 📊';
+  document.getElementById('btn-build').onclick = () => showReport();
+}
+
+/* ============================================================
+   گزارش نهایی
+   ============================================================ */
+function showReport(){
+  const answers = state.answers;
+  const crit = answers.filter(a => a.type === 'critical');
+  const ctrl = answers.filter(a => a.type === 'control');
+  const critErr = crit.filter(a => !a.isCorrect).length;
+  const ctrlErr = ctrl.filter(a => !a.isCorrect).length;
+  const longerErr = crit.filter(a => a.longerError).length;
+
+  document.getElementById('rep-score').textContent = toFa(state.score);
+  document.getElementById('rep-score-sub').textContent = `از ${toFa(TOTAL_Q)} سؤال`;
+  document.getElementById('rep-crit').textContent = `${toFa(longerErr)} از ${toFa(crit.length)}`;
+
+  const buildMap = { ok:'✅ موفق', no:'❌ ناموفق', warn:'⚠️ ناقص', skip:'— رد شد', null:'—' };
+  document.getElementById('rep-build').textContent = buildMap[state.buildResult] || '—';
+
+  /* ---------- تشخیص ---------- */
+  const rate = crit.length ? longerErr / crit.length : 0;
+  const diag = document.getElementById('rep-diag');
+  let html = '';
+
+  if(rate >= 0.7){
+    diag.className = 'diag strong';
+    html = `
+      <h3>🔴 شواهد قوی برای بدفهمی «عدد صحیح‌محور»</h3>
+      در <b>${toFa(longerErr)}</b> مورد از <b>${toFa(crit.length)}</b> موقعیت بحرانی،
+      دانش‌آموز عددی را انتخاب کرده که <b>رقم‌های اعشاری بیشتری</b> داشت — حتی وقتی آن عدد کوچک‌تر بود.
+      ${ctrlErr === 0 ? 'در سؤال‌های کنترل هم عملکرد کامل داشته؛ یعنی قاعده را به‌طور نظام‌مند اجرا می‌کند.' : ''}
+      <br><br>
+      <b>الگوی خطا:</b> Longer-is-Larger (اعشارِ طولانی‌تر = بزرگ‌تر)
+      <br>
+      <b>بدفهمی زیربنایی:</b> Whole-Number Bias / تفکر مبتنی بر اعداد صحیح و ضعف در درک ارزش مکانی رقم‌های اعشاری.
+    `;
+  } else if(rate >= 0.4){
+    diag.className = 'diag mid';
+    html = `
+      <h3>🟡 شواهد متوسط و ناپایدار</h3>
+      در <b>${toFa(longerErr)}</b> مورد از <b>${toFa(crit.length)}</b> موقعیت بحرانی، خطای «رقم بیشتر = بزرگ‌تر» دیده شد.
+      این الگو کاملاً پایدار نیست، اما نشان می‌دهد مفهوم ارزش مکانی اعشار هنوز تثبیت نشده است.
+      <br><br>
+      پیشنهاد: تمرکز روی تبدیل‌هایی مثل ۰/۸ = ۰/۸۰ و مقایسه‌ی جفت‌های مشابه.
+    `;
+  } else {
+    diag.className = 'diag low';
+    html = `
+      <h3>🟢 شواهد ضعیف — درک نسبتاً درست</h3>
+      فقط در <b>${toFa(longerErr)}</b> مورد از <b>${toFa(crit.length)}</b> موقعیت بحرانی خطای طول‌محور رخ داده است.
+      دانش‌آموز در بیشتر موارد ارزش مکانی را درست به کار می‌برد.
+      ${ctrlErr > 0 ? '<br>تنها نکته: در برخی سؤال‌های کنترل هم خطا داشته که جای بررسی دارد.' : ''}
+    `;
+  }
+  diag.innerHTML = html;
+
+  /* ---------- مرور پاسخ‌ها ---------- */
+  const rev = document.getElementById('rep-review');
+  rev.innerHTML = answers.map((a, i) => {
+    const q = a.q;
+    const chosenTxt  = a.clickedSide === 'a' ? fmt(q.a, q.da) : fmt(q.b, q.db);
+    const correctTxt = a.correctSide === 'a' ? fmt(q.a, q.da) : fmt(q.b, q.db);
+    return `
+      <div class="item ${a.isCorrect ? '' : 'bad'}">
+        <div class="pair">${fmt(q.a, q.da)}  ⟷  ${fmt(q.b, q.db)}</div>
+        <div class="why">
+          ${a.isCorrect ? '✅ درست' : '❌ پاسخ تو: ' + chosenTxt + ' — درست: ' + correctTxt}
+          ${a.longerError ? ' — <b style="color:#b91c1c">خطای «رقم بیشتر»</b>' : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  showScreen('screen-report');
+}
+
+/* ============================================================
+   رویدادها
+   ============================================================ */
+document.getElementById('btn-start').addEventListener('click', startGame);
+document.getElementById('card-0').addEventListener('click', function(){ answer(this.dataset.side); });
+document.getElementById('card-1').addEventListener('click', function(){ answer(this.dataset.side); });
+document.getElementById('btn-next').addEventListener('click', nextQuestion);
+document.getElementById('btn-build').addEventListener('click', checkBuild);
+document.getElementById('build-input').addEventListener('keydown', e => {
+  if(e.key === 'Enter') checkBuild();
+});
+document.getElementById('btn-skip').addEventListener('click', () => {
+  state.buildResult = 'skip';
+  showReport();
+});
+document.getElementById('btn-restart').addEventListener('click', startGame);
+</script>
+</body>
+</html>
