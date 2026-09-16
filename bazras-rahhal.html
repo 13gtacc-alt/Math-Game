@@ -1,0 +1,2909 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<title>بازرس راه‌حل | آیا یک ریشه گم شده است؟</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+/* =========================================================
+   متغیرهای اصلی
+========================================================= */
+:root{
+  --bg1:#071426;
+  --bg2:#101b38;
+  --bg3:#211936;
+
+  --gold:#fbbf24;
+  --gold2:#f59e0b;
+
+  --ok:#10b981;
+  --ok2:#059669;
+  --okbg:rgba(16,185,129,.12);
+
+  --bad:#ef4444;
+  --bad2:#b91c1c;
+  --badbg:rgba(239,68,68,.12);
+
+  --warn:#f59e0b;
+  --warnbg:rgba(245,158,11,.12);
+
+  --blue:#6366f1;
+  --blue2:#4338ca;
+
+  --ink:#f8fafc;
+  --muted:#94a3b8;
+  --soft:#cbd5e1;
+
+  --card:rgba(24,36,76,.82);
+  --card2:rgba(13,23,50,.9);
+
+  --border:rgba(251,191,36,.24);
+
+  --shadow:0 18px 55px rgba(0,0,0,.45);
+}
+
+/* =========================================================
+   RESET
+========================================================= */
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
+
+html,body{
+  min-height:100%;
+}
+
+body{
+  font-family:'Vazirmatn',Tahoma,sans-serif;
+  background:
+    radial-gradient(ellipse at 20% -10%,#223b75 0%,transparent 48%),
+    radial-gradient(ellipse at 90% 110%,#47234f 0%,transparent 52%),
+    linear-gradient(145deg,var(--bg1),var(--bg2) 52%,var(--bg3));
+
+  color:var(--ink);
+  min-height:100vh;
+  padding:16px;
+
+  -webkit-font-smoothing:antialiased;
+}
+
+button,
+input{
+  font-family:inherit;
+}
+
+/* =========================================================
+   پس‌زمینه
+========================================================= */
+#stars{
+  position:fixed;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  z-index:0;
+}
+
+.star{
+  position:absolute;
+  background:#fff;
+  border-radius:50%;
+  opacity:.4;
+  animation:twinkle 3s infinite ease-in-out;
+}
+
+@keyframes twinkle{
+  0%,100%{
+    opacity:.12;
+    transform:scale(.7);
+  }
+  50%{
+    opacity:.8;
+    transform:scale(1.15);
+  }
+}
+
+/* =========================================================
+   برنامه
+========================================================= */
+#app{
+  position:relative;
+  z-index:2;
+
+  width:100%;
+  max-width:760px;
+
+  margin:auto;
+}
+
+/* =========================================================
+   صفحه‌ها
+========================================================= */
+.screen{
+  display:none;
+}
+
+.screen.on{
+  display:block;
+  animation:screenIn .35s ease;
+}
+
+@keyframes screenIn{
+  from{
+    opacity:0;
+    transform:translateY(14px);
+  }
+  to{
+    opacity:1;
+    transform:none;
+  }
+}
+
+/* =========================================================
+   پنل
+========================================================= */
+.panel{
+  background:
+    linear-gradient(
+      180deg,
+      var(--card),
+      var(--card2)
+    );
+
+  border:1px solid var(--border);
+  border-radius:24px;
+
+  padding:24px 20px;
+
+  box-shadow:
+    var(--shadow),
+    inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+/* =========================================================
+   HUD
+========================================================= */
+.hud{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:18px;
+}
+
+.pill{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+
+  padding:6px 11px;
+
+  border-radius:999px;
+
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.08);
+
+  color:#dbe4ff;
+
+  font-size:.8rem;
+  font-weight:800;
+
+  white-space:nowrap;
+}
+
+.pill.gold{
+  color:var(--gold);
+  border-color:rgba(251,191,36,.4);
+}
+
+.progress{
+  flex:1;
+  min-width:70px;
+
+  height:9px;
+
+  border-radius:999px;
+
+  background:rgba(0,0,0,.35);
+
+  overflow:hidden;
+}
+
+.progress i{
+  display:block;
+  height:100%;
+  width:0;
+
+  border-radius:999px;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--gold2),
+      var(--gold)
+    );
+
+  transition:width .45s ease;
+}
+
+/* =========================================================
+   تایپوگرافی
+========================================================= */
+h1{
+  font-size:clamp(1.5rem,5vw,2rem);
+  font-weight:900;
+
+  line-height:1.5;
+
+  margin-bottom:10px;
+}
+
+h1 span{
+  background:
+    linear-gradient(
+      180deg,
+      #fff,
+      var(--gold) 70%,
+      var(--gold2)
+    );
+
+  -webkit-background-clip:text;
+  background-clip:text;
+
+  color:transparent;
+}
+
+h2{
+  font-size:1.2rem;
+  font-weight:900;
+
+  color:var(--gold);
+
+  margin-bottom:12px;
+}
+
+h3{
+  font-size:1rem;
+  font-weight:900;
+
+  color:#dbe4ff;
+
+  margin-bottom:8px;
+}
+
+.lead{
+  color:#d1d9ee;
+
+  font-size:.94rem;
+  line-height:2;
+
+  margin-bottom:14px;
+}
+
+.lead b{
+  color:var(--gold);
+}
+
+/* =========================================================
+   نمایش ریاضی
+========================================================= */
+.math{
+  direction:ltr;
+  unicode-bidi:isolate;
+
+  font-family:
+    'Cambria Math',
+    'Vazirmatn',
+    serif;
+
+  font-weight:800;
+
+  font-size:1.35rem;
+
+  color:#fff;
+
+  display:inline-flex;
+
+  align-items:center;
+
+  gap:5px;
+}
+
+.math.sm{
+  font-size:1.05rem;
+}
+
+.math.lg{
+  font-size:1.8rem;
+}
+
+.op{
+  color:var(--gold);
+  margin:0 5px;
+  font-weight:900;
+}
+
+.frac{
+  display:inline-flex;
+  flex-direction:column;
+  align-items:center;
+
+  line-height:1.05;
+
+  margin:0 4px;
+}
+
+.frac .num{
+  border-bottom:2px solid currentColor;
+
+  padding:0 6px 3px;
+}
+
+.frac .den{
+  padding:3px 6px 0;
+}
+
+/* =========================================================
+   فرمول
+========================================================= */
+.formula{
+  background:rgba(0,0,0,.32);
+
+  border:1px solid rgba(255,255,255,.08);
+
+  border-radius:16px;
+
+  padding:16px;
+
+  margin:12px 0;
+
+  text-align:center;
+
+  overflow-x:auto;
+}
+
+.formula.big{
+  padding:20px 15px;
+}
+
+/* =========================================================
+   کادر راه‌حل
+========================================================= */
+.solution-box{
+  background:rgba(0,0,0,.35);
+
+  border:1px dashed rgba(251,191,36,.35);
+
+  border-radius:17px;
+
+  padding:16px;
+
+  margin:13px 0;
+}
+
+.solution-label{
+  color:var(--gold);
+
+  font-size:.84rem;
+
+  font-weight:900;
+
+  margin-bottom:10px;
+}
+
+.step-line{
+  display:flex;
+
+  justify-content:center;
+  align-items:center;
+
+  direction:ltr;
+
+  padding:7px 0;
+}
+
+/* =========================================================
+   دکمه
+========================================================= */
+.btn{
+  width:100%;
+
+  border:0;
+
+  border-radius:16px;
+
+  padding:14px 18px;
+
+  cursor:pointer;
+
+  color:#241500;
+
+  background:
+    linear-gradient(
+      180deg,
+      var(--gold),
+      var(--gold2)
+    );
+
+  box-shadow:
+    0 5px 0 #a35a00,
+    0 10px 25px rgba(251,191,36,.2);
+
+  font-size:.95rem;
+
+  font-weight:900;
+
+  transition:
+    transform .1s,
+    opacity .2s;
+}
+
+.btn:active{
+  transform:translateY(4px);
+}
+
+.btn.ok{
+  color:#fff;
+
+  background:
+    linear-gradient(
+      180deg,
+      var(--ok),
+      var(--ok2)
+    );
+
+  box-shadow:
+    0 5px 0 #065f46,
+    0 10px 25px rgba(16,185,129,.2);
+}
+
+.btn.bad{
+  color:#fff;
+
+  background:
+    linear-gradient(
+      180deg,
+      var(--bad),
+      var(--bad2)
+    );
+
+  box-shadow:
+    0 5px 0 #7f1d1d,
+    0 10px 25px rgba(239,68,68,.2);
+}
+
+.btn.blue{
+  color:#fff;
+
+  background:
+    linear-gradient(
+      180deg,
+      #6366f1,
+      #4338ca
+    );
+
+  box-shadow:
+    0 5px 0 #312e81,
+    0 10px 25px rgba(99,102,241,.2);
+}
+
+.btn.ghost{
+  background:transparent;
+
+  color:#a5b4fc;
+
+  border:1px solid #4338ca;
+
+  box-shadow:none;
+
+  font-size:.88rem;
+}
+
+.btn:disabled{
+  cursor:not-allowed;
+  opacity:.5;
+}
+
+.btn-row{
+  display:grid;
+
+  gap:10px;
+
+  margin-top:14px;
+}
+
+@media(min-width:480px){
+  .btn-row.two{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+/* =========================================================
+   بازخورد
+========================================================= */
+.feedback{
+  display:none;
+
+  margin-top:15px;
+
+  padding:16px;
+
+  border-radius:16px;
+
+  line-height:2;
+
+  font-size:.9rem;
+}
+
+.feedback.show{
+  display:block;
+
+  animation:fade .3s ease;
+}
+
+.feedback.ok{
+  background:var(--okbg);
+
+  border:1px solid rgba(16,185,129,.4);
+}
+
+.feedback.bad{
+  background:var(--badbg);
+
+  border:1px solid rgba(239,68,68,.4);
+}
+
+.feedback.warn{
+  background:var(--warnbg);
+
+  border:1px solid rgba(245,158,11,.4);
+}
+
+.feedback .title{
+  font-weight:900;
+
+  margin-bottom:7px;
+}
+
+.feedback.ok .title{
+  color:#6ee7b7;
+}
+
+.feedback.bad .title{
+  color:#fca5a5;
+}
+
+.feedback.warn .title{
+  color:#fcd34d;
+}
+
+.feedback b{
+  color:var(--gold);
+}
+
+/* =========================================================
+   کارت انتخاب
+========================================================= */
+.choice-grid{
+  display:grid;
+
+  gap:11px;
+
+  margin-top:14px;
+}
+
+.choice{
+  width:100%;
+
+  text-align:right;
+
+  cursor:pointer;
+
+  color:var(--ink);
+
+  background:rgba(255,255,255,.045);
+
+  border:2px solid rgba(99,102,241,.3);
+
+  border-radius:16px;
+
+  padding:15px;
+
+  transition:.15s;
+}
+
+.choice:hover{
+  border-color:var(--gold);
+
+  transform:translateY(-2px);
+}
+
+.choice.correct{
+  border-color:var(--ok);
+
+  background:var(--okbg);
+}
+
+.choice.wrong{
+  border-color:var(--bad);
+
+  background:var(--badbg);
+
+  animation:shake .35s;
+}
+
+.choice-title{
+  font-weight:900;
+
+  color:#dbe4ff;
+
+  margin-bottom:7px;
+}
+
+.choice.correct .choice-title{
+  color:#6ee7b7;
+}
+
+.choice.wrong .choice-title{
+  color:#fca5a5;
+}
+
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-7px)}
+  50%{transform:translateX(7px)}
+  75%{transform:translateX(-4px)}
+}
+
+/* =========================================================
+   کشف شرط
+========================================================= */
+.discovery{
+  background:rgba(0,0,0,.3);
+
+  border-radius:17px;
+
+  padding:17px;
+
+  margin-top:15px;
+}
+
+.discovery-question{
+  color:#dbe4ff;
+
+  line-height:2;
+
+  text-align:center;
+
+  margin-bottom:12px;
+}
+
+.condition{
+  display:none;
+
+  text-align:center;
+
+  padding:14px;
+
+  margin-top:12px;
+
+  border-radius:15px;
+
+  background:rgba(251,191,36,.1);
+
+  border:1px solid rgba(251,191,36,.35);
+}
+
+.condition.show{
+  display:block;
+
+  animation:pop .35s ease;
+}
+
+@keyframes pop{
+  from{
+    opacity:0;
+    transform:scale(.95);
+  }
+  to{
+    opacity:1;
+    transform:scale(1);
+  }
+}
+
+/* =========================================================
+   ورودی پاسخ
+========================================================= */
+.answer-box{
+  margin-top:16px;
+
+  padding:16px;
+
+  background:rgba(0,0,0,.3);
+
+  border-radius:17px;
+}
+
+.answer-label{
+  display:block;
+
+  color:#dbe4ff;
+
+  font-size:.9rem;
+
+  font-weight:800;
+
+  margin-bottom:8px;
+}
+
+.answer-input{
+  width:100%;
+
+  padding:13px;
+
+  border-radius:13px;
+
+  border:2px solid rgba(99,102,241,.4);
+
+  outline:none;
+
+  background:#0b142b;
+
+  color:#fff;
+
+  font-size:1.1rem;
+
+  text-align:center;
+
+  direction:ltr;
+}
+
+.answer-input:focus{
+  border-color:var(--gold);
+}
+
+/* =========================================================
+   جدول مقایسه
+========================================================= */
+.compare{
+  display:grid;
+
+  gap:12px;
+
+  margin-top:14px;
+}
+
+.method{
+  background:rgba(0,0,0,.3);
+
+  border:2px solid rgba(99,102,241,.28);
+
+  border-radius:17px;
+
+  padding:16px;
+
+  cursor:pointer;
+
+  transition:.15s;
+
+  color:var(--ink);
+
+  text-align:center;
+}
+
+.method:hover{
+  border-color:var(--gold);
+
+  transform:translateY(-2px);
+}
+
+.method.correct{
+  border-color:var(--ok);
+
+  background:var(--okbg);
+}
+
+.method.wrong{
+  border-color:var(--bad);
+
+  background:var(--badbg);
+
+  animation:shake .35s;
+}
+
+.method-title{
+  color:var(--gold);
+
+  font-weight:900;
+
+  margin-bottom:10px;
+}
+
+/* =========================================================
+   نوار نتیجه
+========================================================= */
+.result-strip{
+  display:flex;
+
+  flex-wrap:wrap;
+
+  gap:8px;
+
+  justify-content:center;
+
+  margin-top:15px;
+}
+
+.result-chip{
+  padding:7px 13px;
+
+  border-radius:999px;
+
+  background:rgba(16,185,129,.12);
+
+  border:1px solid rgba(16,185,129,.3);
+
+  color:#6ee7b7;
+
+  font-size:.84rem;
+
+  font-weight:900;
+}
+
+/* =========================================================
+   صفحه پایان
+========================================================= */
+.final-icon{
+  font-size:4.5rem;
+
+  text-align:center;
+
+  display:block;
+
+  margin-bottom:8px;
+}
+
+.final-score{
+  text-align:center;
+
+  font-size:2.5rem;
+
+  font-weight:900;
+
+  color:var(--gold);
+
+  margin-bottom:4px;
+}
+
+.final-title{
+  text-align:center;
+
+  color:#a5b4fc;
+
+  margin-bottom:18px;
+
+  font-weight:800;
+}
+
+.final-report{
+  background:rgba(0,0,0,.3);
+
+  border-radius:17px;
+
+  padding:17px;
+
+  line-height:2;
+
+  color:#dbe4ff;
+
+  font-size:.91rem;
+}
+
+.final-report b{
+  color:var(--gold);
+}
+
+/* =========================================================
+   نکته کتاب
+========================================================= */
+.book-note{
+  margin-top:17px;
+
+  padding:14px;
+
+  border-radius:15px;
+
+  background:rgba(99,102,241,.1);
+
+  border:1px solid rgba(99,102,241,.25);
+
+  color:#c7d2fe;
+
+  font-size:.82rem;
+
+  line-height:2;
+}
+
+/* =========================================================
+   انیمیشن
+========================================================= */
+@keyframes fade{
+  from{
+    opacity:0;
+  }
+  to{
+    opacity:1;
+  }
+}
+
+/* =========================================================
+   موبایل
+========================================================= */
+@media(max-width:420px){
+
+  body{
+    padding:10px;
+  }
+
+  .panel{
+    padding:19px 14px;
+
+    border-radius:20px;
+  }
+
+  .math{
+    font-size:1.18rem;
+  }
+
+  .math.lg{
+    font-size:1.45rem;
+  }
+
+  h1{
+    font-size:1.4rem;
+  }
+
+  h2{
+    font-size:1.08rem;
+  }
+
+  .lead{
+    font-size:.9rem;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<div id="stars"></div>
+
+<div id="app">
+
+<!-- =====================================================
+     شروع
+===================================================== -->
+<section id="start" class="screen on">
+
+<div class="panel">
+
+  <div style="text-align:center;font-size:3.2rem;margin-bottom:8px">
+    🔎
+  </div>
+
+  <h1 style="text-align:center">
+    <span>بازرس راه‌حل</span>
+  </h1>
+
+  <p class="lead" style="text-align:center">
+    آیا یک ریشه گم شده است؟
+  </p>
+
+  <div class="solution-box">
+
+    <div class="solution-label">
+      📋 پرونده‌ی امروز
+    </div>
+
+    <p class="lead" style="text-align:center">
+      یک دانش‌آموز معادله‌ی زیر را این‌گونه حل کرده است:
+    </p>
+
+    <div class="formula big">
+
+      <span class="math lg">
+        x²
+        <span class="op">=</span>
+        3x
+      </span>
+
+    </div>
+
+    <p class="lead" style="text-align:center">
+
+      سپس نوشته است:
+
+    </p>
+
+    <div class="step-line">
+
+      <span class="math">
+
+        <span class="frac">
+          <span class="num">x²</span>
+          <span class="den">x</span>
+        </span>
+
+        <span class="op">=</span>
+
+        <span class="frac">
+          <span class="num">3x</span>
+          <span class="den">x</span>
+        </span>
+
+      </span>
+
+    </div>
+
+    <div class="step-line">
+
+      <span class="math">
+        x <span class="op">=</span> 3
+      </span>
+
+    </div>
+
+  </div>
+
+  <p class="lead" style="text-align:center">
+
+    مأموریت تو این است که بدون اعتماد کردنِ فوری به پاسخ،
+    <b>مراحل استدلال</b> را بررسی کنی.
+
+  </p>
+
+  <button class="btn" onclick="startActivity()">
+    شروع بررسی 🔍
+  </button>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     مرحله ۱
+===================================================== -->
+<section id="stage1" class="screen">
+
+<div class="panel">
+
+  <div class="hud">
+
+    <span class="pill">
+      مرحله ۱ از ۶
+    </span>
+
+    <div class="progress">
+      <i id="progress1"></i>
+    </div>
+
+    <span class="pill gold">
+      ⭐ <span id="score1">۰</span>
+    </span>
+
+  </div>
+
+  <h2>
+    🔍 مرحله اول: آیا باید به پاسخ اعتماد کنیم؟
+  </h2>
+
+  <p class="lead">
+
+    دانش‌آموز در پایان به
+    <b>x = 3</b>
+    رسیده است.
+
+    اما سؤال بازرس این نیست که «پاسخ نهایی چه عددی است؟»
+
+    بلکه باید بپرسیم:
+
+  </p>
+
+  <div class="formula">
+
+    <span class="math">
+      آیا همه‌ی جواب‌های معادله پیدا شده‌اند؟
+    </span>
+
+  </div>
+
+  <div class="choice-grid">
+
+    <button class="choice" data-q="s1" data-answer="yes">
+
+      <div class="choice-title">
+        گزینه الف
+      </div>
+
+      <div>
+        بله؛ چون مراحل محاسبه درست انجام شده‌اند.
+      </div>
+
+    </button>
+
+    <button class="choice" data-q="s1" data-answer="no">
+
+      <div class="choice-title">
+        گزینه ب
+      </div>
+
+      <div>
+        نه؛ ممکن است یک جواب در یکی از مراحل از دست رفته باشد.
+      </div>
+
+    </button>
+
+    <button class="choice" data-q="s1" data-answer="unsure">
+
+      <div class="choice-title">
+        گزینه ج
+      </div>
+
+      <div>
+        هنوز نمی‌توانم تصمیم بگیرم؛ باید راه‌حل را آزمایش کنم.
+      </div>
+
+    </button>
+
+  </div>
+
+  <div id="feedback1" class="feedback"></div>
+
+  <button id="next1" class="btn blue" style="display:none;margin-top:14px">
+    آزمایش یک مقدار مشکوک ←
+  </button>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     مرحله ۲
+===================================================== -->
+<section id="stage2" class="screen">
+
+<div class="panel">
+
+  <div class="hud">
+
+    <span class="pill">
+      مرحله ۲ از ۶
+    </span>
+
+    <div class="progress">
+      <i id="progress2"></i>
+    </div>
+
+    <span class="pill gold">
+      ⭐ <span id="score2">۰</span>
+    </span>
+
+  </div>
+
+  <h2>
+    🧪 مرحله دوم: یک آزمایش ساده
+  </h2>
+
+  <p class="lead">
+
+    یکی از ساده‌ترین راه‌های بررسی این موضوع،
+    آزمایش کردن یک مقدار خاص در
+    <b>معادله‌ی اولیه</b>
+    است.
+
+  </p>
+
+  <div class="formula big">
+
+    <span class="math lg">
+      x² <span class="op">=</span> 3x
+    </span>
+
+  </div>
+
+  <p class="lead" style="text-align:center">
+
+    حالا
+    <b>x = 0</b>
+    را آزمایش کن.
+
+  </p>
+
+  <div class="formula">
+
+    <span class="math">
+      (۰)²
+      <span class="op">=</span>
+      ۳ × ۰
+    </span>
+
+    <br><br>
+
+    <span class="math">
+      ۰
+      <span class="op">=</span>
+      ۰
+    </span>
+
+  </div>
+
+  <p class="lead">
+    بنابراین کدام گزینه درست است؟
+  </p>
+
+  <div class="choice-grid">
+
+    <button class="choice" data-q="s2" data-answer="root">
+
+      <div class="choice-title">
+        گزینه الف
+      </div>
+
+      <div>
+        x = 0 یک ریشه‌ی معادله است.
+      </div>
+
+    </button>
+
+    <button class="choice" data-q="s2" data-answer="notroot">
+
+      <div class="choice-title">
+        گزینه ب
+      </div>
+
+      <div>
+        x = 0 ریشه‌ی معادله نیست.
+      </div>
+
+    </button>
+
+  </div>
+
+  <div id="feedback2" class="feedback"></div>
+
+  <button id="next2" class="btn blue" style="display:none;margin-top:14px">
+    پیدا کردن لحظه‌ی گم‌شدن ریشه ←
+  </button>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     مرحله ۳
+===================================================== -->
+<section id="stage3" class="screen">
+
+<div class="panel">
+
+  <div class="hud">
+
+    <span class="pill">
+      مرحله ۳ از ۶
+    </span>
+
+    <div class="progress">
+      <i id="progress3"></i>
+    </div>
+
+    <span class="pill gold">
+      ⭐ <span id="score3">۰</span>
+    </span>
+
+  </div>
+
+  <h2>
+    🎯 مرحله سوم: ریشه دقیقاً کجا گم شد؟
+  </h2>
+
+  <p class="lead">
+
+    اکنون می‌دانیم
+    <b>x = 0</b>
+    واقعاً یک ریشه است.
+
+    پس باید بررسی کنیم در کدام مرحله از راه‌حل دانش‌آموز،
+    این ریشه کنار گذاشته شده است.
+
+  </p>
+
+  <div class="solution-box">
+
+    <div class="step-line">
+
+      <span class="math sm">
+        x² <span class="op">=</span> 3x
+      </span>
+
+    </div>
+
+    <div class="step-line">
+
+      <span class="math sm">
+
+        <span class="frac">
+          <span class="num">x²</span>
+          <span class="den">x</span>
+        </span>
+
+        <span class="op">=</span>
+
+        <span class="frac">
+          <span class="num">3x</span>
+          <span class="den">x</span>
+        </span>
+
+      </span>
+
+    </div>
+
+    <div class="step-line">
+
+      <span class="math sm">
+        x <span class="op">=</span> 3
+      </span>
+
+    </div>
+
+  </div>
+
+  <p class="lead">
+    روی مرحله‌ای کلیک کن که به نظرت باید با دقت بیشتری بررسی شود:
+  </p>
+
+  <div class="choice-grid">
+
+    <button class="choice" data-q="s3" data-answer="1">
+
+      <div class="choice-title">
+        گام ۱
+      </div>
+
+      <div class="formula">
+        <span class="math sm">
+          x² <span class="op">=</span> 3x
+        </span>
+      </div>
+
+      نوشتن معادله‌ی اولیه
+
+    </button>
+
+    <button class="choice" data-q="s3" data-answer="2">
+
+      <div class="choice-title">
+        گام ۲
+      </div>
+
+      <div class="formula">
+
+        <span class="math sm">
+
+          <span class="frac">
+            <span class="num">x²</span>
+            <span class="den">x</span>
+          </span>
+
+          <span class="op">=</span>
+
+          <span class="frac">
+            <span class="num">3x</span>
+            <span class="den">x</span>
+          </span>
+
+        </span>
+
+      </div>
+
+      تقسیم دو طرف بر x
+
+    </button>
+
+    <button class="choice" data-q="s3" data-answer="3">
+
+      <div class="choice-title">
+        گام ۳
+      </div>
+
+      <div class="formula">
+
+        <span class="math sm">
+          x <span class="op">=</span> 3
+        </span>
+
+      </div>
+
+      نتیجه‌گیری
+
+    </button>
+
+  </div>
+
+  <div id="feedback3" class="feedback"></div>
+
+  <button id="next3" class="btn blue" style="display:none;margin-top:14px">
+    بررسی شرط پنهان ←
+  </button>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     مرحله ۴
+===================================================== -->
+<section id="stage4" class="screen">
+
+<div class="panel">
+
+  <div class="hud">
+
+    <span class="pill">
+      مرحله ۴ از ۶
+    </span>
+
+    <div class="progress">
+      <i id="progress4"></i>
+    </div>
+
+    <span class="pill gold">
+      ⭐ <span id="score4">۰</span>
+    </span>
+
+  </div>
+
+  <h2>
+    💡 مرحله چهارم: شرط پنهان را کشف کن
+  </h2>
+
+  <p class="lead">
+
+    در گام دوم، دانش‌آموز دو طرف معادله را بر
+    <b>x</b>
+    تقسیم کرده است.
+
+    حالا یک سؤال مهم:
+
+  </p>
+
+  <div class="discovery">
+
+    <div class="discovery-question">
+
+      آیا عبارت زیر برای
+      <b>همه‌ی مقادیر x</b>
+      برابر ۱ است؟
+
+    </div>
+
+    <div class="formula">
+
+      <span class="math lg">
+
+        <span class="frac">
+          <span class="num">x</span>
+          <span class="den">x</span>
+        </span>
+
+        <span class="op">=</span>
+
+        1
+
+      </span>
+
+    </div>
+
+    <div class="choice-grid">
+
+      <button class="choice" id="conditionYes">
+
+        خیر؛ اگر x=0 باشد، تقسیم بر صفر انجام می‌شود.
+
+      </button>
+
+      <button class="choice" id="conditionNo">
+
+        بله؛ x/x همیشه برابر ۱ است.
+
+      </button>
+
+    </div>
+
+    <div id="feedback4" class="feedback"></div>
+
+    <div id="conditionBox" class="condition">
+
+      <div style="color:var(--gold);font-weight:900;margin-bottom:8px">
+        🔑 شرط پنهان
+      </div>
+
+      <span class="math lg">
+        x ≠ ۰
+      </span>
+
+      <p style="margin-top:10px;color:#dbe4ff;line-height:2">
+
+        بنابراین وقتی دانش‌آموز بر
+        <b>x</b>
+        تقسیم کرد، در واقع فقط حالت‌های
+        <b>x ≠ 0</b>
+        را در نظر گرفت.
+
+        به این ترتیب، احتمال از دست رفتن
+        <b>x = 0</b>
+        ایجاد شد.
+
+      </p>
+
+    </div>
+
+  </div>
+
+  <button id="next4" class="btn blue" style="display:none;margin-top:14px">
+    مقایسه‌ی دو روش حل ←
+  </button>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     مرحله ۵
+===================================================== -->
+<section id="stage5" class="screen">
+
+<div class="panel">
+
+  <div class="hud">
+
+    <span class="pill">
+      مرحله ۵ از ۶
+    </span>
+
+    <div class="progress">
+      <i id="progress5"></i>
+    </div>
+
+    <span class="pill gold">
+      ⭐ <span id="score5">۰</span>
+    </span>
+
+  </div>
+
+  <h2>
+    ⚖️ مرحله پنجم: کدام روش همه‌ی جواب‌ها را حفظ می‌کند؟
+  </h2>
+
+  <p class="lead">
+
+    دو مسیر زیر را مقایسه کن.
+
+    هدف این است که روشی را پیدا کنی که
+    <b>هر دو ریشه‌ی معادله</b>
+    را آشکار کند.
+
+  </p>
+
+  <div class="compare">
+
+    <button class="method" data-method="A">
+
+      <div class="method-title">
+        روش A — تقسیم بر x
+      </div>
+
+      <div class="formula">
+
+        <span class="math sm">
+          x² <span class="op">=</span> 3x
+        </span>
+
+        <br><br>
+
+        <span class="math sm">
+          x <span class="op">=</span> 3
+        </span>
+
+      </div>
+
+      <div>
+        نتیجه‌ی به‌دست‌آمده:
+      </div>
+
+      <div class="result-strip">
+
+        <span class="result-chip">
+          x = 3
+        </span>
+
+      </div>
+
+    </button>
+
+
+    <button class="method" data-method="B">
+
+      <div class="method-title">
+        روش B — انتقال و فاکتورگیری
+      </div>
+
+      <div class="formula">
+
+        <span class="math sm">
+          x² − 3x = 0
+        </span>
+
+        <br><br>
+
+        <span class="math sm">
+          x(x − 3) = 0
+        </span>
+
+      </div>
+
+      <div>
+        نتیجه‌ی به‌دست‌آمده:
+      </div>
+
+      <div class="result-strip">
+
+        <span class="result-chip">
+          x = 0
+        </span>
+
+        <span class="result-chip">
+          x = 3
+        </span>
+
+      </div>
+
+    </button>
+
+  </div>
+
+  <div id="feedback5" class="feedback"></div>
+
+  <button id="next5" class="btn blue" style="display:none;margin-top:14px">
+    آزمون انتقال یادگیری ←
+  </button>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     مرحله ۶
+===================================================== -->
+<section id="stage6" class="screen">
+
+<div class="panel">
+
+  <div class="hud">
+
+    <span class="pill">
+      مرحله ۶ از ۶
+    </span>
+
+    <div class="progress">
+      <i id="progress6"></i>
+    </div>
+
+    <span class="pill gold">
+      ⭐ <span id="score6">۰</span>
+    </span>
+
+  </div>
+
+  <h2>
+    🚀 مرحله ششم: حالا خودت حل کن
+  </h2>
+
+  <p class="lead">
+
+    اکنون باید ببینیم آیا می‌توانی این نکته را در یک موقعیت جدید
+    به کار ببری.
+
+  </p>
+
+  <div class="formula big">
+
+    <span class="math lg">
+      x² <span class="op">=</span> 5x
+    </span>
+
+  </div>
+
+  <p class="lead">
+
+    سؤال اول:
+
+    اگر مستقیماً دو طرف را بر
+    <b>x</b>
+    تقسیم کنیم، آیا ممکن است یک ریشه از دست برود؟
+
+  </p>
+
+  <div class="choice-grid">
+
+    <button class="choice" id="transferYes">
+      بله؛ چون x می‌تواند صفر باشد.
+    </button>
+
+    <button class="choice" id="transferNo">
+      خیر؛ تقسیم بر x همیشه مجاز است.
+    </button>
+
+  </div>
+
+  <div id="feedback6" class="feedback"></div>
+
+  <div id="independentPart" style="display:none">
+
+    <div class="answer-box">
+
+      <label class="answer-label">
+        حالا هر دو ریشه‌ی معادله را وارد کن.
+        آن‌ها را با ویرگول جدا کن.
+      </label>
+
+      <input
+        id="rootAnswer"
+        class="answer-input"
+        placeholder="مثلاً: 4, 7"
+        autocomplete="off"
+      >
+
+      <button
+        id="checkRoots"
+        class="btn"
+        style="margin-top:10px"
+      >
+        بررسی پاسخ من
+      </button>
+
+    </div>
+
+    <div id="rootFeedback" class="feedback"></div>
+
+    <button
+      id="finishBtn"
+      class="btn blue"
+      style="display:none;margin-top:14px"
+    >
+      مشاهده‌ی گزارش نهایی 🏆
+    </button>
+
+  </div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     پایان
+===================================================== -->
+<section id="end" class="screen">
+
+<div class="panel">
+
+  <div class="final-icon">
+    🏆
+  </div>
+
+  <div class="final-score">
+    <span id="finalScore">۰</span> / ۶
+  </div>
+
+  <div class="final-title">
+    امتیاز فعالیت
+  </div>
+
+  <div class="final-report">
+
+    <h3>
+      🔎 گزارش بازرسی
+    </h3>
+
+    <p>
+      در این فعالیت، تو یک خطای جبری را فقط از روی جواب نهایی تشخیص ندادی؛
+      بلکه <b>فرایند رسیدن به جواب</b> را بررسی کردی.
+    </p>
+
+    <br>
+
+    <p>
+      نقطه‌ی مشکوک در راه‌حل دانش‌آموز،
+      <b>تقسیم دو طرف معادله بر x</b>
+      بود.
+    </p>
+
+    <br>
+
+    <p>
+      دلیل آن این است که برای چنین تقسیمی باید در نظر گرفت:
+    </p>
+
+    <div class="formula">
+
+      <span class="math lg">
+        x ≠ ۰
+      </span>
+
+    </div>
+
+    <p>
+      در حالی که در معادله‌ی اولیه،
+      <b>x = 0</b>
+      نیز یک جواب بود.
+    </p>
+
+    <br>
+
+    <p>
+      بنابراین، انجام یک عملیات جبری بدون توجه به شرط آن
+      می‌تواند باعث شود یکی از جواب‌های معادله‌ی اولیه در فرایند حل
+      دیگر دیده نشود.
+    </p>
+
+  </div>
+
+  <div class="book-note">
+
+    💡 <b>نکته‌ی یادگیری:</b>
+
+    یک پاسخ نهاییِ درست یا نادرست، همیشه برای شناسایی نوع خطای دانش‌آموز کافی نیست.
+    بررسی مرحله‌به‌مرحله‌ی استدلال می‌تواند نشان دهد
+    <b>خطا دقیقاً در کدام عملیات و تحت چه شرطی رخ داده است.</b>
+
+  </div>
+
+  <button
+    id="restart"
+    class="btn blue"
+    style="margin-top:16px"
+  >
+    اجرای دوباره‌ی فعالیت 🔄
+  </button>
+
+</div>
+
+</section>
+
+</div>
+
+
+<script>
+/* =========================================================
+   ابزارهای عمومی
+========================================================= */
+
+const $ = id => document.getElementById(id);
+
+const FA = '۰۱۲۳۴۵۶۷۸۹';
+
+function fa(n){
+  return String(n).replace(/\d/g,d=>FA[d]);
+}
+
+function showScreen(id){
+
+  document.querySelectorAll('.screen')
+    .forEach(s=>s.classList.remove('on'));
+
+  $(id).classList.add('on');
+
+  window.scrollTo({
+    top:0,
+    behavior:'smooth'
+  });
+}
+
+function setProgress(n){
+
+  for(let i=1;i<=6;i++){
+
+    const p = $('progress'+i);
+
+    if(p){
+      p.style.width =
+        (Math.max(0,Math.min(100,(n/6)*100)))+'%';
+    }
+  }
+}
+
+function updateScores(){
+
+  for(let i=1;i<=6;i++){
+
+    const el = $('score'+i);
+
+    if(el){
+      el.textContent = fa(state.score);
+    }
+  }
+}
+
+
+/* =========================================================
+   وضعیت فعالیت
+========================================================= */
+
+const state = {
+
+  score:0,
+
+  answered:{
+    s1:false,
+    s2:false,
+    s3:false,
+    s4:false,
+    s5:false,
+    s6:false
+  },
+
+  independentCorrect:false
+};
+
+
+/* =========================================================
+   ستاره‌ها
+========================================================= */
+
+(function(){
+
+  const box = $('stars');
+
+  let html='';
+
+  for(let i=0;i<65;i++){
+
+    const size = 1 + Math.random()*2.2;
+
+    html += `
+      <span
+        class="star"
+        style="
+          left:${Math.random()*100}%;
+          top:${Math.random()*100}%;
+          width:${size}px;
+          height:${size}px;
+          animation-delay:${Math.random()*3}s;
+          animation-duration:${2.4+Math.random()*2.4}s;
+        "
+      ></span>
+    `;
+  }
+
+  box.innerHTML=html;
+
+})();
+
+
+/* =========================================================
+   صدا
+========================================================= */
+
+let audioContext=null;
+
+function activateAudio(){
+
+  if(!audioContext){
+
+    try{
+
+      audioContext =
+        new(window.AudioContext||window.webkitAudioContext)();
+
+    }catch(e){
+
+      audioContext=null;
+
+    }
+  }
+
+  if(
+    audioContext &&
+    audioContext.state==='suspended'
+  ){
+
+    audioContext.resume();
+
+  }
+
+}
+
+function tone(
+  frequency,
+  duration=.1,
+  type='sine',
+  volume=.06
+){
+
+  activateAudio();
+
+  if(!audioContext)return;
+
+  const osc =
+    audioContext.createOscillator();
+
+  const gain =
+    audioContext.createGain();
+
+  const now =
+    audioContext.currentTime;
+
+  osc.type=type;
+
+  osc.frequency.setValueAtTime(
+    frequency,
+    now
+  );
+
+  gain.gain.setValueAtTime(
+    volume,
+    now
+  );
+
+  gain.gain.exponentialRampToValueAtTime(
+    .0001,
+    now+duration
+  );
+
+  osc.connect(gain);
+
+  gain.connect(audioContext.destination);
+
+  osc.start(now);
+
+  osc.stop(now+duration+.02);
+}
+
+const sound={
+
+  click(){
+    tone(600,.04,'sine',.04);
+  },
+
+  correct(){
+    tone(660,.09,'sine',.07);
+    tone(880,.13,'sine',.06);
+  },
+
+  wrong(){
+    tone(190,.16,'sawtooth',.06);
+  },
+
+  finish(){
+    [523,659,784,1046]
+      .forEach((f,i)=>{
+        setTimeout(
+          ()=>tone(f,.2,'sine',.06),
+          i*100
+        );
+      });
+  }
+
+};
+
+
+/* =========================================================
+   شروع
+========================================================= */
+
+function startActivity(){
+
+  sound.click();
+
+  state.score=0;
+
+  updateScores();
+
+  setProgress(1);
+
+  showScreen('stage1');
+}
+
+
+/* =========================================================
+   مرحله ۱
+========================================================= */
+
+document
+.querySelectorAll('[data-q="s1"]')
+.forEach(btn=>{
+
+  btn.addEventListener('click',()=>{
+
+    if(state.answered.s1)return;
+
+    sound.click();
+
+    const answer=btn.dataset.answer;
+
+    const feedback=$('feedback1');
+
+    if(answer==='no'){
+
+      state.score++;
+
+      feedback.className='feedback show ok';
+
+      feedback.innerHTML=`
+        <div class="title">
+          ✅ تشخیص خوبی بود.
+        </div>
+
+        <div>
+          پاسخ نهایی فقط نشان می‌دهد که
+          <b>x=3</b>
+          یک جواب است؛
+          اما هنوز نمی‌دانیم آیا
+          <b>جواب دیگری هم وجود دارد یا نه.</b>
+
+          بنابراین باید راه‌حل را بررسی و آزمایش کنیم.
+        </div>
+      `;
+
+      sound.correct();
+
+    }
+
+    else if(answer==='yes'){
+
+      feedback.className='feedback show bad';
+
+      feedback.innerHTML=`
+        <div class="title">
+          🔎 هنوز برای این نتیجه زود است.
+        </div>
+
+        <div>
+          رسیدن به
+          <b>x=3</b>
+          به‌تنهایی ثابت نمی‌کند که
+          همه‌ی جواب‌های معادله پیدا شده‌اند.
+
+          باید یک مقدار خاص را در
+          <b>معادله‌ی اولیه</b>
+          آزمایش کنیم.
+        </div>
+      `;
+
+      sound.wrong();
+
+    }
+
+    else{
+
+      feedback.className='feedback show warn';
+
+      feedback.innerHTML=`
+        <div class="title">
+          🔍 این تردید مفید است.
+        </div>
+
+        <div>
+          وقتی درباره‌ی کامل بودن یک راه‌حل مطمئن نیستیم،
+          بهترین کار این است که
+          <b>ادعا را با یک آزمایش ساده بررسی کنیم.</b>
+        </div>
+      `;
+
+      sound.click();
+
+    }
+
+    state.answered.s1=true;
+
+    updateScores();
+
+    $('next1').style.display='block';
+
+  });
+
+});
+
+
+$('next1').onclick=()=>{
+
+  sound.click();
+
+  setProgress(2);
+
+  showScreen('stage2');
+
+};
+
+
+/* =========================================================
+   مرحله ۲
+========================================================= */
+
+document
+.querySelectorAll('[data-q="s2"]')
+.forEach(btn=>{
+
+  btn.addEventListener('click',()=>{
+
+    if(state.answered.s2)return;
+
+    const answer=btn.dataset.answer;
+
+    const feedback=$('feedback2');
+
+    if(answer==='root'){
+
+      state.score++;
+
+      feedback.className='feedback show ok';
+
+      feedback.innerHTML=`
+        <div class="title">
+          ✅ درست است.
+        </div>
+
+        <div>
+          چون با قرار دادن
+          <b>x=0</b>
+          در معادله‌ی اولیه به
+          <b>۰=۰</b>
+          می‌رسیم،
+          <b>x=0</b>
+          واقعاً یک ریشه است.
+
+          پس راه‌حل دانش‌آموز یک جواب را از دست داده است.
+        </div>
+      `;
+
+      sound.correct();
+
+      state.answered.s2=true;
+
+      $('next2').style.display='block';
+
+    }
+
+    else{
+
+      feedback.className='feedback show bad';
+
+      feedback.innerHTML=`
+        <div class="title">
+          ❌ دوباره آزمایش را بررسی کن.
+        </div>
+
+        <div>
+          معادله‌ی اولیه را فراموش نکن:
+
+          <div class="formula">
+            <span class="math">
+              (۰)² = ۳ × ۰
+            </span>
+          </div>
+
+          یعنی
+          <b>۰=۰</b>.
+
+          بنابراین
+          <b>x=0</b>
+          یک ریشه است.
+        </div>
+      `;
+
+      sound.wrong();
+
+    }
+
+    updateScores();
+
+  });
+
+});
+
+
+$('next2').onclick=()=>{
+
+  sound.click();
+
+  setProgress(3);
+
+  showScreen('stage3');
+
+};
+
+
+/* =========================================================
+   مرحله ۳
+========================================================= */
+
+document
+.querySelectorAll('[data-q="s3"]')
+.forEach(btn=>{
+
+  btn.addEventListener('click',()=>{
+
+    if(state.answered.s3)return;
+
+    const answer=btn.dataset.answer;
+
+    const feedback=$('feedback3');
+
+    if(answer==='2'){
+
+      state.score++;
+
+      feedback.className='feedback show ok';
+
+      feedback.innerHTML=`
+        <div class="title">
+          🎯 نقطه‌ی مشکوک را پیدا کردی.
+        </div>
+
+        <div>
+          در گام دوم،
+          دو طرف معادله بر
+          <b>x</b>
+          تقسیم شده‌اند.
+
+          اکنون باید بررسی کنیم که آیا این تقسیم
+          برای همه‌ی مقادیر
+          <b>x</b>
+          مجاز بوده است یا نه.
+        </div>
+      `;
+
+      sound.correct();
+
+      state.answered.s3=true;
+
+      $('next3').style.display='block';
+
+    }
+
+    else{
+
+      feedback.className='feedback show bad';
+
+      feedback.innerHTML=`
+        <div class="title">
+          ❌ این مرحله منشأ اصلی مشکل نیست.
+        </div>
+
+        <div>
+          به عملیاتی که بین این مراحل انجام شده توجه کن.
+          کدام مرحله شامل
+          <b>تقسیم بر یک عبارت شامل متغیر</b>
+          است؟
+        </div>
+      `;
+
+      sound.wrong();
+
+    }
+
+    updateScores();
+
+  });
+
+});
+
+
+$('next3').onclick=()=>{
+
+  sound.click();
+
+  setProgress(4);
+
+  showScreen('stage4');
+
+};
+
+
+/* =========================================================
+   مرحله ۴
+========================================================= */
+
+$('conditionYes').onclick=()=>{
+
+  if(state.answered.s4)return;
+
+  state.score++;
+
+  state.answered.s4=true;
+
+  $('conditionYes').classList.add('correct');
+
+  $('feedback4').className='feedback show ok';
+
+  $('feedback4').innerHTML=`
+    <div class="title">
+      💡 کشف شد!
+    </div>
+
+    <div>
+      اگر
+      <b>x=0</b>
+      باشد، عبارت
+      <b>x/x</b>
+      شامل تقسیم بر صفر خواهد بود.
+
+      بنابراین نمی‌توانیم بدون درنظرگرفتن شرط،
+      آن را همیشه برابر ۱ بدانیم.
+    </div>
+  `;
+
+  $('conditionBox').classList.add('show');
+
+  $('next4').style.display='block';
+
+  sound.correct();
+
+  updateScores();
+
+};
+
+
+$('conditionNo').onclick=()=>{
+
+  if(state.answered.s4)return;
+
+  $('conditionNo').classList.add('wrong');
+
+  $('feedback4').className='feedback show bad';
+
+  $('feedback4').innerHTML=`
+    <div class="title">
+      ❌ یک حالت مهم را بررسی کن.
+    </div>
+
+    <div>
+      اگر
+      <b>x=0</b>
+      باشد،
+      مخرج کسر نیز صفر می‌شود.
+
+      بنابراین
+      <b>x/x</b>
+      برای این مقدار تعریف نشده است.
+    </div>
+  `;
+
+  sound.wrong();
+
+};
+
+
+$('next4').onclick=()=>{
+
+  sound.click();
+
+  setProgress(5);
+
+  showScreen('stage5');
+
+};
+
+
+/* =========================================================
+   مرحله ۵
+========================================================= */
+
+document
+.querySelectorAll('.method')
+.forEach(method=>{
+
+  method.addEventListener('click',()=>{
+
+    if(state.answered.s5)return;
+
+    const answer=method.dataset.method;
+
+    const feedback=$('feedback5');
+
+    if(answer==='B'){
+
+      state.score++;
+
+      state.answered.s5=true;
+
+      method.classList.add('correct');
+
+      feedback.className='feedback show ok';
+
+      feedback.innerHTML=`
+        <div class="title">
+          ✅ هر دو ریشه حفظ شدند.
+        </div>
+
+        <div>
+          با فاکتورگیری داریم:
+
+          <div class="formula">
+            <span class="math">
+              x(x−3)=0
+            </span>
+          </div>
+
+          بنابراین:
+
+          <div class="formula">
+            <span class="math">
+              x=0
+              <span class="op">یا</span>
+              x=3
+            </span>
+          </div>
+
+          این روش در این مثال هر دو حالت را آشکار می‌کند.
+        </div>
+      `;
+
+      $('next5').style.display='block';
+
+      sound.correct();
+
+    }
+
+    else{
+
+      method.classList.add('wrong');
+
+      setTimeout(()=>{
+        method.classList.remove('wrong');
+      },500);
+
+      feedback.className='feedback show bad';
+
+      feedback.innerHTML=`
+        <div class="title">
+          ❌ دوباره به نتیجه نگاه کن.
+        </div>
+
+        <div>
+          روش A فقط
+          <b>x=3</b>
+          را نشان می‌دهد،
+          در حالی که قبلاً با آزمایش فهمیدیم
+          <b>x=0</b>
+          نیز ریشه است.
+
+          پس باید روشی را پیدا کنیم که هر دو حالت را آشکار کند.
+        </div>
+      `;
+
+      sound.wrong();
+
+    }
+
+    updateScores();
+
+  });
+
+});
+
+
+$('next5').onclick=()=>{
+
+  sound.click();
+
+  setProgress(6);
+
+  showScreen('stage6');
+
+};
+
+
+/* =========================================================
+   مرحله ۶
+========================================================= */
+
+$('transferYes').onclick=()=>{
+
+  if(state.answered.s6)return;
+
+  state.score++;
+
+  state.answered.s6=true;
+
+  $('transferYes').classList.add('correct');
+
+  $('feedback6').className='feedback show ok';
+
+  $('feedback6').innerHTML=`
+    <div class="title">
+      🚀 انتقال یادگیری موفق بود.
+    </div>
+
+    <div>
+      در معادله‌ی
+      <b>x²=5x</b>
+      نیز
+      <b>x=0</b>
+      یک جواب است.
+
+      بنابراین اگر مستقیماً بر
+      <b>x</b>
+      تقسیم کنیم،
+      ممکن است همین ریشه حذف شود.
+    </div>
+  `;
+
+  $('independentPart').style.display='block';
+
+  sound.correct();
+
+  updateScores();
+
+};
+
+
+$('transferNo').onclick=()=>{
+
+  if(state.answered.s6)return;
+
+  $('transferNo').classList.add('wrong');
+
+  $('feedback6').className='feedback show bad';
+
+  $('feedback6').innerHTML=`
+    <div class="title">
+      ❌ همان الگوی خطا دوباره ظاهر شد.
+    </div>
+
+    <div>
+      ابتدا
+      <b>x=0</b>
+      را در معادله‌ی
+      <b>x²=5x</b>
+      آزمایش کن:
+
+      <div class="formula">
+        <span class="math">
+          ۰² = ۵×۰
+        </span>
+      </div>
+
+      پس
+      <b>x=0</b>
+      یک ریشه است و تقسیم مستقیم بر
+      <b>x</b>
+      می‌تواند آن را حذف کند.
+    </div>
+  `;
+
+  sound.wrong();
+
+};
+
+
+/* =========================================================
+   بررسی حل مستقل
+========================================================= */
+
+$('checkRoots').onclick=()=>{
+
+  const raw=$('rootAnswer').value
+    .replace(/[۰-۹]/g,d=>
+      '0123456789'[
+        '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)
+      ]
+    )
+    .replace(/،/g,',')
+    .replace(/\s/g,'');
+
+  const parts=raw
+    .split(',')
+    .filter(Boolean);
+
+  const numbers=
+    parts
+    .map(Number)
+    .filter(n=>Number.isFinite(n));
+
+  const has0=numbers.includes(0);
+  const has5=numbers.includes(5);
+
+  const correct=
+    numbers.length===2 &&
+    has0 &&
+    has5;
+
+  const feedback=$('rootFeedback');
+
+  if(correct){
+
+    if(!state.independentCorrect){
+
+      state.score++;
+
+      state.independentCorrect=true;
+
+    }
+
+    feedback.className='feedback show ok';
+
+    feedback.innerHTML=`
+      <div class="title">
+        🎯 کاملاً درست!
+      </div>
+
+      <div>
+        دو ریشه‌ی معادله عبارت‌اند از:
+
+        <div class="formula">
+          <span class="math">
+            x=0
+            <span class="op">یا</span>
+            x=5
+          </span>
+        </div>
+
+        تو توانستی الگوی کشف‌شده را
+        در یک معادله‌ی جدید به کار ببری.
+      </div>
+    `;
+
+    $('finishBtn').style.display='block';
+
+    sound.correct();
+
+  }
+
+  else{
+
+    feedback.className='feedback show bad';
+
+    feedback.innerHTML=`
+      <div class="title">
+        🔎 هنوز کامل نیست.
+      </div>
+
+      <div>
+        معادله را به شکل زیر بررسی کن:
+
+        <div class="formula">
+          <span class="math">
+            x²−5x=0
+          </span>
+        </div>
+
+        سپس:
+
+        <div class="formula">
+          <span class="math">
+            x(x−5)=0
+          </span>
+        </div>
+
+        حالا هر دو حالت را پیدا کن.
+      </div>
+    `;
+
+    sound.wrong();
+
+  }
+
+  updateScores();
+
+};
+
+
+/* =========================================================
+   پایان
+========================================================= */
+
+$('finishBtn').onclick=()=>{
+
+  sound.finish();
+
+  $('finalScore').textContent=
+    fa(state.score);
+
+  showScreen('end');
+
+};
+
+
+/* =========================================================
+   شروع دوباره
+========================================================= */
+
+$('restart').onclick=()=>{
+
+  state.score=0;
+
+  Object.keys(state.answered)
+    .forEach(k=>{
+      state.answered[k]=false;
+    });
+
+  state.independentCorrect=false;
+
+  $('rootAnswer').value='';
+
+  document
+    .querySelectorAll('.choice,.method')
+    .forEach(el=>{
+      el.classList.remove(
+        'correct',
+        'wrong'
+      );
+    });
+
+  document
+    .querySelectorAll('.feedback')
+    .forEach(el=>{
+      el.className='feedback';
+      el.innerHTML='';
+    });
+
+  $('conditionBox')
+    .classList.remove('show');
+
+  $('independentPart')
+    .style.display='none';
+
+  [
+    'next1',
+    'next2',
+    'next3',
+    'next4',
+    'next5',
+    'finishBtn'
+  ]
+  .forEach(id=>{
+    $(id).style.display='none';
+  });
+
+  updateScores();
+
+  setProgress(1);
+
+  showScreen('stage1');
+
+};
+
+
+/* =========================================================
+   فعال کردن صدا در موبایل
+========================================================= */
+
+document.addEventListener(
+  'click',
+  activateAudio,
+  {once:true}
+);
+
+document.addEventListener(
+  'touchstart',
+  activateAudio,
+  {once:true}
+);
+
+</script>
+
+</body>
+</html>
